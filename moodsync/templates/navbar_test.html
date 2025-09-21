@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navbar Test - MoodSync</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .brand-icon {
+            position: relative;
+            display: inline-block;
+        }
+
+        .pulse-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border: 2px solid #007bff;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: translate(-50%, -50%) scale(0.8);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        .brand-text {
+            line-height: 1.2;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: #007bff !important;
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            color: #007bff !important;
+            font-weight: 600;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 2px;
+            background: #007bff;
+            border-radius: 2px;
+        }
+
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 10px 0;
+        }
+
+        .dropdown-item {
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background: #f8f9fa;
+            transform: translateX(5px);
+        }
+
+        .quick-log-btn {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            border: none;
+            border-radius: 25px;
+            padding: 8px 20px;
+            color: white;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .quick-log-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .test-content {
+            margin-top: 100px;
+            padding: 40px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Enhanced Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top" id="mainNavbar">
+        <div class="container">
+            <!-- Brand Section -->
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <div class="brand-icon me-2">
+                    <i class="bi bi-emoji-smile-fill text-primary fs-3"></i>
+                    <div class="pulse-ring"></div>
+                </div>
+                <div class="brand-text">
+                    <span class="fw-bold text-primary">Mood</span><span class="fw-bold text-secondary">Sync</span>
+                    <small class="d-block text-muted d-none d-lg-block">Emotion Tracker</small>
+                </div>
+            </a>
+
+            <!-- Mobile Toggle -->
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navigation Menu -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <!-- Home -->
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">
+                            <i class="bi bi-house-door me-1"></i>Home
+                        </a>
+                    </li>
+
+                    <!-- Features Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-grid-3x3-gap me-1"></i>Features
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-camera me-2"></i>Live Detection</a>
+                            </li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-graph-up me-2"></i>Analytics</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-journal-text me-2"></i>Mood Logger</a>
+                            </li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-lightbulb me-2"></i>AI Suggestions</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- About -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-info-circle me-1"></i>About
+                        </a>
+                    </li>
+
+                    <!-- Contact -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-envelope me-1"></i>Contact
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Right Side Actions -->
+                <ul class="navbar-nav">
+                    <!-- Quick Log Button -->
+                    <li class="nav-item me-3">
+                        <button class="btn quick-log-btn">
+                            <i class="bi bi-plus-circle me-1"></i>Quick Log
+                        </button>
+                    </li>
+
+                    <!-- Notifications -->
+                    <li class="nav-item me-3">
+                        <a class="nav-link position-relative" href="#">
+                            <i class="bi bi-bell fs-5"></i>
+                            <span class="notification-badge">3</span>
+                        </a>
+                    </li>
+
+                    <!-- User Profile Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+                            data-bs-toggle="dropdown">
+                            <div class="user-avatar me-2">U</div>
+                            <span class="d-none d-lg-inline">User</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-graph-up me-2"></i>Analytics</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Test Content -->
+    <div class="container">
+        <div class="test-content">
+            <h1 class="text-center mb-5">🎯 Navbar Test Page</h1>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="feature-card">
+                        <h5><i class="bi bi-check-circle text-success me-2"></i>Navbar Features</h5>
+                        <ul class="list-unstyled">
+                            <li>✅ Responsive Design</li>
+                            <li>✅ Bootstrap 5 Integration</li>
+                            <li>✅ Animated Logo</li>
+                            <li>✅ Dropdown Menus</li>
+                            <li>✅ Quick Actions</li>
+                            <li>✅ Notifications</li>
+                            <li>✅ User Profile</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="feature-card">
+                        <h5><i class="bi bi-palette text-primary me-2"></i>Styling Features</h5>
+                        <ul class="list-unstyled">
+                            <li>✅ Glassmorphism Effect</li>
+                            <li>✅ Smooth Animations</li>
+                            <li>✅ Hover Effects</li>
+                            <li>✅ Active States</li>
+                            <li>✅ Mobile Responsive</li>
+                            <li>✅ Custom Icons</li>
+                            <li>✅ Gradient Buttons</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <h4>Test the Navbar:</h4>
+                <p class="text-muted">Try clicking on different menu items, dropdowns, and buttons to see the
+                    interactions.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+        // Add some interactive functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('Navbar test page loaded successfully!');
+
+            // Add click handlers for demonstration
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    console.log('Clicked:', this.textContent.trim());
+                });
+            });
+
+            // Quick log button functionality
+            document.querySelector('.quick-log-btn').addEventListener('click', function () {
+                alert('Quick Log feature clicked!');
+            });
+
+            // Notification click
+            document.querySelector('.nav-link[href="#"]').addEventListener('click', function () {
+                alert('Notifications clicked!');
+            });
+        });
+    </script>
+</body>
+
+</html>

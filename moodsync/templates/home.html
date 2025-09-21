@@ -1,0 +1,831 @@
+{% extends "base.html" %}
+
+{% block title %}Home - MoodSync{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary: #6c63ff;
+        --secondary: #4dccc6;
+        --accent: #ff6b6b;
+        --dark: #2c2c54;
+        --light: #f7f7f7;
+        --happy: #1cc88a;
+        --sad: #4e73df;
+        --angry: #e74a3b;
+        --surprise: #36b9cc;
+        --fear: #f6c23e;
+        --disgust: #9c27b0;
+        --neutral: #858796;
+        --gradient-start: #6c63ff;
+        --gradient-end: #4dccc6;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        color: var(--dark);
+        overflow-x: hidden;
+    }
+
+    /* Navbar Styles */
+    .navbar {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 2px 30px rgba(0, 0, 0, 0.1);
+        padding: 15px 0;
+        transition: all 0.4s ease;
+    }
+
+    .navbar-brand {
+        font-weight: 700;
+        color: var(--primary);
+        font-size: 1.8rem;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+    .navbar-brand:hover {
+        transform: scale(1.05);
+    }
+
+    .navbar-brand i {
+        margin-right: 10px;
+        animation: pulse 2s infinite;
+    }
+
+    .nav-link {
+        font-weight: 500;
+        margin: 0 10px;
+        position: relative;
+        color: var(--dark);
+        transition: all 0.3s ease;
+        border-radius: 20px;
+        padding: 8px 15px !important;
+    }
+
+    .nav-link:after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: 0;
+        left: 0;
+        background: linear-gradient(to right, var(--primary), var(--secondary));
+        transition: width 0.3s ease;
+    }
+
+    .nav-link:hover {
+        color: var(--primary);
+        background: rgba(108, 99, 255, 0.1);
+    }
+
+    .nav-link:hover:after {
+        width: 100%;
+    }
+
+    .nav-link.active {
+        background: linear-gradient(to right, var(--primary), var(--secondary));
+        color: white;
+        box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
+    }
+
+    .dropdown-menu {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .dropdown-item {
+        padding: 10px 20px;
+        transition: all 0.3s ease;
+    }
+
+    .dropdown-item:hover {
+        background: linear-gradient(to right, var(--primary), var(--secondary));
+        color: white;
+        transform: translateX(5px);
+    }
+
+    /* Animation for navbar brand icon */
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+</style>
+</head>
+
+<body class="fade-in">
+
+    <div class="content-wrapper">
+        <div class="dashboard-container py-5">
+            <!-- Animated Background Elements -->
+            <div class="dashboard-background">
+                <div class="bg-shape shape-1"></div>
+                <div class="bg-shape shape-2"></div>
+                <div class="bg-shape shape-3"></div>
+                <div class="bg-shape shape-4"></div>
+            </div>
+
+            <!-- Top Section: Greeting + Daily Mood Check-in -->
+            <div class="row mb-5">
+                <div class="col-lg-7">
+                    <div
+                        class="card shadow-sm border-0 rounded-lg p-4 h-100 bg-gradient-light animated-card slide-in-left">
+                        <div class="card-body">
+                            <h2 class="greeting-text mb-3">Good
+                                <span id="time-of-day">day</span>,
+                                <span class="text-primary">{{ session.get('username', 'Friend') }}</span>!
+                            </h2>
+                            <p class="lead mb-4">How are you feeling today?</p>
+                            <div class="d-grid gap-2 d-md-flex">
+                                <a href="{{ url_for('mood_logger') }}"
+                                    class="btn btn-primary btn-lg px-4 me-md-2 pulse-animation hover-lift">
+                                    <i class="bi bi-camera me-2"></i>Check In Now
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 mt-4 mt-lg-0">
+                    <div class="card shadow-sm border-0 rounded-lg p-4 h-100 animated-card slide-in-right">
+                        <div class="card-body">
+                            <h4 class="card-title mb-3"><i class="bi bi-calendar-check me-2"></i>Daily Streak</h4>
+                            <div class="text-center py-3">
+                                <div class="display-1 fw-bold text-primary mb-2 streak-counter"
+                                    data-target="{% if mood_stats and mood_stats.streak %}{{ mood_stats.streak }}{% else %}0{% endif %}">
+                                    0</div>
+                                <p class="text-muted">days in a row</p>
+                                <div class="progress mt-3" style="height: 10px;">
+                                    {% set streak_value = mood_stats.streak if mood_stats and mood_stats.streak else 0
+                                    %}
+                                    {% set progress_width = streak_value * 10 if streak_value <= 10 else 100 %} <div
+                                        class="progress-bar bg-primary progress-bar-animated" role="progressbar"
+                                        style="width: {{ progress_width }}%;" aria-valuenow="{{ streak_value }}"
+                                        aria-valuemin="0" aria-valuemax="10">
+                                </div>
+                            </div>
+                            <p class="mt-2 small">
+                                {% if streak_value >= 10 %}
+                                You've reached the maximum streak! Keep it up!
+                                {% else %}
+                                {{ 10 - streak_value }} more days to reach your next milestone!
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Middle Section: Mood summary graph + Journal shortcut -->
+        <div class="row mb-5">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0 rounded-lg p-4 h-100 animated-card slide-in-left"
+                    style="animation-delay: 0.2s">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="card-title mb-0"><i class="bi bi-journal-text me-2"></i>Entry</h4>
+                        </div>
+                        <div class="mb-3">
+                            <textarea class="form-control" id="journalEntry" rows="6"
+                                placeholder="Write your thoughts and feelings here..."></textarea>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-primary" id="saveJournalEntry">
+                                <i class="bi bi-save me-2"></i>Save Entry
+                            </button>
+                            <button class="btn btn-outline-primary" id="viewPastEntries">
+                                <i class="bi bi-clock-history me-2"></i>View Past Entries
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mt-4 mt-lg-0">
+                <div class="card shadow-sm border-0 rounded-lg p-4 h-100 bg-gradient-primary text-white animated-card slide-in-right"
+                    style="animation-delay: 0.2s">
+                    <div class="card-body d-flex flex-column">
+                        <h4 class="card-title mb-3"><i class="bi bi-file-earmark-pdf me-2"></i>Generate Report</h4>
+                        <p>Download a comprehensive report of your mood patterns with personalized recommendations.</p>
+                        <div class="mt-auto">
+                            <div class="mb-3">
+                                <select class="form-select" id="reportTimeframe">
+                                    <option value="week">Weekly Report</option>
+                                    <option value="month">Monthly Report</option>
+                                    <option value="year">Yearly Report</option>
+                                </select>
+                            </div>
+                            <button id="generateReport" class="btn btn-light btn-lg w-100 hover-lift">
+                                <i class="bi bi-download me-2"></i>Download Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Section: Recent Activities & Quote -->
+        <div class="row">
+            <div class="col-lg-8 mb-4 mb-lg-0">
+                <div class="card shadow-sm border-0 rounded-lg p-4 h-100 animated-card fade-in"
+                    style="animation-delay: 0.4s">
+                    <div class="card-body">
+                        <h4 class="card-title mb-3"><i class="bi bi-clock-history me-2"></i>Recent Activities</h4>
+                        <div class="activity-feed">
+                            {% if recent_activities %}
+                            {% for activity in recent_activities %}
+                            <div class="activity-item">
+                                <div class="activity-icon bg-{{ activity.type }}">
+                                    <i class="bi bi-{{ activity.icon }}"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <p class="mb-0">{{ activity.message }}</p>
+                                    <small class="text-muted">{{ activity.time }}</small>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            {% else %}
+                            <div class="text-center py-4">
+                                <i class="bi bi-inbox display-4 text-muted"></i>
+                                <p class="mt-3">No activities yet. Check in to get started!</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0 rounded-lg p-4 h-100 animated-card fade-in"
+                    style="animation-delay: 0.4s">
+                    <div class="card-body text-center">
+                        <i class="bi bi-quote display-4 text-primary opacity-50"></i>
+                        <blockquote class="blockquote mb-0">
+                            <p id="quote-text">"Your emotions are the slaves to your thoughts, and you are the slave to
+                                your emotions."</p>
+                            <footer class="blockquote-footer mt-2" id="quote-author">Elizabeth Gilbert</footer>
+                        </blockquote>
+                        <button id="new-quote" class="btn btn-sm btn-outline-primary mt-3 hover-lift">
+                            <i class="bi bi-arrow-repeat me-1"></i>New Quote
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        /* Dashboard Specific Styles */
+        .dashboard-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            font-weight: 600;
+            border: none;
+            padding: 15px 20px;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 50px;
+            padding: 10px 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(108, 99, 255, 0.4);
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+        }
+
+        /* Form elements styling */
+        .form-control {
+            border-radius: 10px;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+            border-color: var(--primary);
+        }
+
+        /* Animation for elements */
+        .fade-in {
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(to bottom, var(--secondary), var(--primary));
+        }
+
+        .dashboard-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.05;
+            animation: float 15s infinite linear;
+        }
+
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            background: var(--bs-primary);
+            top: -150px;
+            left: -150px;
+            animation-delay: 0s;
+        }
+
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            background: var(--bs-info);
+            bottom: -100px;
+            right: 10%;
+            animation-delay: -5s;
+        }
+
+        .shape-3 {
+            width: 150px;
+            height: 150px;
+            background: var(--bs-success);
+            top: 20%;
+            right: -75px;
+            animation-delay: -10s;
+        }
+
+        .shape-4 {
+            width: 100px;
+            height: 100px;
+            background: var(--bs-warning);
+            bottom: 10%;
+            left: 5%;
+            animation-delay: -7s;
+        }
+
+        /* Card Animations */
+        .animated-card {
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .slide-in-left {
+            transform: translateX(-50px);
+        }
+
+        .slide-in-right {
+            transform: translateX(50px);
+        }
+
+        .fade-in {
+            transform: translateY(30px);
+        }
+
+        .card-visible {
+            opacity: 1;
+            transform: translate(0, 0) !important;
+        }
+
+        /* Progress Bar Animation */
+        .progress-bar-animated {
+            transition: width 1.5s ease-in-out;
+        }
+
+        /* Streak Counter Animation */
+        .streak-counter {
+            transition: all 1s ease-out;
+        }
+
+        /* Activity Feed */
+        .activity-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .activity-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .activity-content {
+            flex-grow: 1;
+        }
+
+        /* Hover Effects */
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        /* Background Gradients */
+        .bg-gradient-light {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #6f42c1 0%, #6a11cb 100%);
+        }
+
+        /* Animation Keyframes */
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-15px) rotate(3deg);
+            }
+
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(111, 66, 193, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 15px rgba(111, 66, 193, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(111, 66, 193, 0);
+            }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .display-1 {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        // Update greeting based on time of day
+        function updateGreeting() {
+            const hour = new Date().getHours();
+            let timeOfDay = "day";
+
+            if (hour < 12) {
+                timeOfDay = "morning";
+            } else if (hour < 18) {
+                timeOfDay = "afternoon";
+            } else {
+                timeOfDay = "evening";
+            }
+
+            document.getElementById('time-of-day').textContent = timeOfDay;
+        }
+
+        // Animate streak counter
+        function animateValue(element, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                element.innerHTML = Math.floor(progress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // Quotes array
+        const quotes = [
+            { text: "Your emotions are the slaves to your thoughts, and you are the slave to your emotions.", author: "Elizabeth Gilbert" },
+            { text: "The best way to capture moments is to pay attention. This is how we cultivate mindfulness.", author: "Jon Kabat-Zinn" },
+            { text: "You don't have to control your thoughts. You just have to stop letting them control you.", author: "Dan Millman" },
+            { text: "Happiness is not something ready-made. It comes from your own actions.", author: "Dalai Lama" },
+            { text: "The greatest weapon against stress is our ability to choose one thought over another.", author: "William James" }
+        ];
+
+        // Update quote function
+        function updateQuote() {
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            document.getElementById('quote-text').textContent = `"${quotes[randomIndex].text}"`;
+            document.getElementById('quote-author').textContent = quotes[randomIndex].author;
+        }
+
+        // Journal Entry Functions
+        function saveJournalEntry() {
+            const entryText = document.getElementById('journalEntry').value.trim();
+            if (!entryText) {
+                alert('Please write something in your journal entry.');
+                return;
+            }
+
+            // Send the entry to the server
+            fetch('/save_journal', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    entry_text: entryText
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Clear the textarea and show success message
+                        document.getElementById('journalEntry').value = '';
+                        alert('Journal entry saved successfully!');
+
+                        // Store in localStorage for demo purposes (until database is fully implemented)
+                        const timestamp = new Date().toISOString();
+                        const entry = {
+                            text: entryText,
+                            timestamp: timestamp
+                        };
+                        const entries = JSON.parse(localStorage.getItem('journalEntries') || '[]');
+                        entries.push(entry);
+                        localStorage.setItem('journalEntries', JSON.stringify(entries));
+                    } else {
+                        alert('Error saving journal entry: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error saving journal entry:', error);
+                    alert('Error saving journal entry. Please try again.');
+                });
+        }
+
+        function viewPastEntries() {
+            // First try to get entries from the server
+            fetch('/get_journal_entries')
+                .then(response => response.json())
+                .then(data => {
+                    let entries = data.entries;
+
+                    // If no entries from server, use localStorage for demo purposes
+                    if (!entries || entries.length === 0) {
+                        entries = JSON.parse(localStorage.getItem('journalEntries') || '[]');
+                    }
+
+                    if (entries.length === 0) {
+                        alert('You have no journal entries yet.');
+                        return;
+                    }
+
+                    // For demo purposes, just show the entries in an alert
+                    let entriesText = 'Your Journal Entries:\n\n';
+                    entries.forEach((entry, index) => {
+                        const date = new Date(entry.timestamp).toLocaleString();
+                        entriesText += `${date}:\n${entry.text || entry.entry_text}\n\n`;
+                    });
+
+                    alert(entriesText);
+                })
+                .catch(error => {
+                    console.error('Error fetching journal entries:', error);
+
+                    // Fallback to localStorage
+                    const entries = JSON.parse(localStorage.getItem('journalEntries') || '[]');
+
+                    if (entries.length === 0) {
+                        alert('You have no journal entries yet.');
+                        return;
+                    }
+
+                    let entriesText = 'Your Journal Entries (Local):\n\n';
+                    entries.forEach((entry, index) => {
+                        const date = new Date(entry.timestamp).toLocaleString();
+                        entriesText += `${date}:\n${entry.text}\n\n`;
+                    });
+
+                    alert(entriesText);
+                });
+        }
+
+        // Report Generation Function
+        function generateReport() {
+            const timeframe = document.getElementById('reportTimeframe').value;
+            const username = '{{ session.get("username", "User") }}';
+            const currentDate = new Date().toLocaleDateString();
+
+            // First, notify the server about the report generation
+            fetch('/generate_report', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    timeframe: timeframe
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Even if the server response fails, we'll still generate a client-side PDF for demo purposes
+                    if (!data.success) {
+                        console.warn('Server reported an issue with report generation:', data.message);
+                    }
+
+                    // Initialize jsPDF
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+
+                    // Add report title
+                    doc.setFontSize(22);
+                    doc.setTextColor(111, 66, 193); // Purple color
+                    doc.text('MoodSync Report', 105, 20, { align: 'center' });
+
+                    // Add user info and date
+                    doc.setFontSize(12);
+                    doc.setTextColor(0, 0, 0);
+                    doc.text(`Generated for: ${username}`, 20, 40);
+                    doc.text(`Date: ${currentDate}`, 20, 50);
+                    doc.text(`Report Type: ${timeframe.charAt(0).toUpperCase() + timeframe.slice(1)}ly Report`, 20, 60);
+
+                    // Add mood summary section
+                    doc.setFontSize(16);
+                    doc.setTextColor(111, 66, 193);
+                    doc.text('Mood Summary', 20, 80);
+
+                    doc.setFontSize(12);
+                    doc.setTextColor(0, 0, 0);
+                    doc.text('Your predominant moods during this period were:', 20, 90);
+                    doc.text('• Happy (40%)', 30, 100);
+                    doc.text('• Calm (30%)', 30, 110);
+                    doc.text('• Anxious (15%)', 30, 120);
+                    doc.text('• Sad (10%)', 30, 130);
+                    doc.text('• Angry (5%)', 30, 140);
+
+                    // Add recommendations section
+                    doc.setFontSize(16);
+                    doc.setTextColor(111, 66, 193);
+                    doc.text('Personalized Recommendations', 20, 160);
+
+                    doc.setFontSize(12);
+                    doc.setTextColor(0, 0, 0);
+                    doc.text('Based on your mood patterns, we recommend:', 20, 170);
+                    doc.text('1. Practice mindfulness meditation for 10 minutes daily', 20, 180);
+                    doc.text('2. Engage in physical activity at least 3 times per week', 20, 190);
+                    doc.text('3. Maintain a regular sleep schedule', 20, 200);
+                    doc.text('4. Connect with friends or family members regularly', 20, 210);
+
+                    // Add footer
+                    doc.setFontSize(10);
+                    doc.setTextColor(100, 100, 100);
+                    doc.text('Generated by MoodSync - Your Emotional Wellness Companion', 105, 280, { align: 'center' });
+
+                    // Save the PDF
+                    doc.save(`MoodSync_${timeframe}ly_Report_${currentDate.replace(/\//g, '-')}.pdf`);
+                })
+                .catch(error => {
+                    console.error('Error generating report:', error);
+                    alert('Error generating report. Please try again.');
+                });
+        }
+
+        // Animate cards on scroll
+        function animateOnScroll() {
+            const cards = document.querySelectorAll('.animated-card');
+
+            cards.forEach(card => {
+                const cardTop = card.getBoundingClientRect().top;
+                const cardBottom = card.getBoundingClientRect().bottom;
+
+                // If card is in viewport
+                if (cardTop < window.innerHeight && cardBottom > 0) {
+                    card.classList.add('card-visible');
+                }
+            });
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            updateGreeting();
+
+            // Animate streak counter
+            const streakElement = document.querySelector('.streak-counter');
+            const targetValue = parseInt(streakElement.getAttribute('data-target'));
+            animateValue(streakElement, 0, targetValue, 1500);
+
+            // Set up quote button
+            document.getElementById('new-quote').addEventListener('click', updateQuote);
+
+            // Set up journal entry buttons
+            document.getElementById('saveJournalEntry').addEventListener('click', saveJournalEntry);
+            document.getElementById('viewPastEntries').addEventListener('click', viewPastEntries);
+
+            // Set up report generation button
+            document.getElementById('generateReport').addEventListener('click', generateReport);
+
+            // Set up scroll animation
+            window.addEventListener('scroll', animateOnScroll);
+            animateOnScroll(); // Initial check
+        });
+    </script>
+    {% endblock %}

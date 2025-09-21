@@ -1,0 +1,95 @@
+/* MoodSync Additional CSS */
+
+/* This file contains additional styles that complement style.css */
+
+/* Emotion Badge Colors */
+.bg-angry {
+    background-color: var(--angry-color);
+    color: white;
+}
+
+.bg-disgust {
+    background-color: var(--disgust-color);
+    color: white;
+}
+
+.bg-fear {
+    background-color: var(--fear-color);
+    color: #212529;
+}
+
+.bg-happy {
+    background-color: var(--happy-color);
+    color: white;
+}
+
+.bg-neutral {
+    background-color: var(--neutral-color);
+    color: white;
+}
+
+.bg-sad {
+    background-color: var(--sad-color);
+    color: white;
+}
+
+.bg-surprise {
+    background-color: var(--surprise-color);
+    color: white;
+}
+
+/* Additional Animation Classes */
+.bounce {
+    animation: bounce var(--animation-medium) infinite;
+}
+
+.shake {
+    animation: shake var(--animation-fast) infinite;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .container {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    
+    h1 {
+        font-size: 1.75rem;
+    }
+    
+    .lead {
+        font-size: 1rem;
+    }
+}
+
+/* Accessibility Improvements */
+.btn:focus, .form-control:focus {
+    box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+}
+
+/* Print Styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    body {
+        background-color: white !important;
+    }
+    
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #dee2e6 !important;
+    }
+}

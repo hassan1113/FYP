@@ -1,0 +1,773 @@
+{% extends 'base.html' %}
+
+{% block title %}MoodSync - Track Your Emotional Wellbeing{% endblock %}
+
+{% block content %}
+<!-- Animated Background -->
+<div class="animated-background">
+  <div class="shape shape-1"></div>
+  <div class="shape shape-2"></div>
+  <div class="shape shape-3"></div>
+  <div class="shape shape-4"></div>
+</div>
+
+<!-- Hero Section -->
+<section class="hero-section py-5">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6">
+        <h1 class="display-4 fw-bold mb-4 text-gradient">Track Your Emotional Journey</h1>
+        <p class="lead mb-4">MoodSync helps you understand your emotional patterns and improve your mental wellbeing through AI-powered mood tracking and personalized insights.</p>
+        <div class="d-grid gap-3 d-md-flex justify-content-md-start mb-4">
+          <a href="{{ url_for('mood_logger') }}" class="btn btn-primary btn-lg px-4 me-md-2">
+            <i class="bi bi-emoji-smile me-2"></i>Log Your Mood
+          </a>
+          <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary btn-lg px-4">
+            <i class="bi bi-bar-chart-line me-2"></i>View Dashboard
+          </a>
+        </div>
+        <div class="privacy-badge p-3 bg-light rounded-3 border border-primary border-opacity-25">
+          <div class="d-flex align-items-center">
+            <i class="bi bi-shield-check text-primary fs-1 me-3" aria-hidden="true"></i>
+            <div>
+              <h5 class="mb-1">Privacy First</h5>
+              <p class="mb-0 text-muted">Your emotional data stays private and secure</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 mt-5 mt-lg-0 text-center">
+        <img src="{{ url_for('static', filename='images/hero-image.svg') }}" alt="MoodSync dashboard visualization showing emotional tracking interface" class="img-fluid rounded shadow-lg hero-image">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="section-how-it-works py-5 py-md-7">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 text-center mb-5">
+        <h2 class="display-6 section-title">How It Works</h2>
+        <p class="text-muted">Three simple steps to better emotional awareness</p>
+      </div>
+    </div>
+    <div class="row process-steps g-4">
+      <div class="col-md-4">
+        <div class="step-card h-100" data-step="1">
+          <div class="step-number">01</div>
+          <div class="feature-icon bg-primary-gradient text-white rounded-circle mb-3">
+            <i class="bi bi-camera" aria-hidden="true"></i>
+          </div>
+          <h3>Capture Your Mood</h3>
+          <p class="text-muted">Use your webcam to automatically detect your current emotional state or manually log how you're feeling.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="step-card h-100" data-step="2">
+          <div class="step-number">02</div>
+          <div class="feature-icon bg-primary-gradient text-white rounded-circle mb-3">
+            <i class="bi bi-graph-up" aria-hidden="true"></i>
+          </div>
+          <h3>Track Patterns</h3>
+          <p class="text-muted">Visualize your emotional trends over time and identify patterns related to activities, time, and context.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="step-card h-100" data-step="3">
+          <div class="step-number">03</div>
+          <div class="feature-icon bg-primary-gradient text-white rounded-circle mb-3">
+            <i class="bi bi-lightbulb" aria-hidden="true"></i>
+          </div>
+          <h3>Get Suggestions</h3>
+          <p class="text-muted">Receive personalized recommendations based on your mood to improve your emotional well-being.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Why Use MoodSync Section -->
+<section class="section-features py-5 py-md-7 bg-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 mb-5 mb-lg-0">
+        <h2 class="display-6 mb-4 section-title">Why Use MoodSync?</h2>
+        <div class="features-list">
+          <div class="feature-item">
+            <div class="feature-icon-sm">
+              <i class="bi bi-robot text-primary" aria-hidden="true"></i>
+            </div>
+            <div class="feature-content">
+              <h5>AI-Powered Emotion Detection</h5>
+              <p>Accurately identifies your emotional state using advanced facial recognition</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon-sm">
+              <i class="bi bi-person-check text-primary" aria-hidden="true"></i>
+            </div>
+            <div class="feature-content">
+              <h5>Personalized Suggestions</h5>
+              <p>Get tailored recommendations based on your mood patterns and preferences</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon-sm">
+              <i class="bi bi-bar-chart-line text-primary" aria-hidden="true"></i>
+            </div>
+            <div class="feature-content">
+              <h5>Mood Analytics</h5>
+              <p>Understand your emotional patterns over time with beautiful visualizations</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon-sm">
+              <i class="bi bi-shield-lock text-primary" aria-hidden="true"></i>
+            </div>
+            <div class="feature-content">
+              <h5>Privacy-Focused</h5>
+              <p>Your data stays on your device - we never share your personal information</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon-sm">
+              <i class="bi bi-ui-checks text-primary" aria-hidden="true"></i>
+            </div>
+            <div class="feature-content">
+              <h5>Easy to Use</h5>
+              <p>Simple, intuitive interface for daily mood tracking with minimal effort</p>
+            </div>
+          </div>
+        </div>
+        <a href="{{ url_for('mood_logger') }}" class="btn btn-primary mt-4">
+          <i class="bi bi-emoji-smile me-2" aria-hidden="true"></i>Try It Now
+        </a>
+      </div>
+      <div class="col-lg-6">
+        <div class="testimonial-carousel">
+          <div class="testimonial-header text-center mb-4">
+            <h3 class="section-title">What Our Users Say</h3>
+            <p class="text-muted">Real feedback from our community</p>
+          </div>
+          <div class="testimonial-container">
+            <div class="testimonial active">
+              <blockquote class="testimonial-content">
+                <div class="d-flex align-items-center mb-4">
+                  <div class="avatar bg-primary text-white rounded-circle me-3">JD</div>
+                  <div>
+                    <h6 class="mb-0">Jane Doe</h6>
+                    <div class="text-warning small">
+                      <i class="bi bi-star-fill" aria-hidden="true"></i>
+                      <i class="bi bi-star-fill" aria-hidden="true"></i>
+                      <i class="bi bi-star-fill" aria-hidden="true"></i>
+                      <i class="bi bi-star-fill" aria-hidden="true"></i>
+                      <i class="bi bi-star-fill" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+                <p class="mb-0">"MoodSync has helped me understand my emotional patterns and take proactive steps to improve my mental well-being. The insights are incredibly accurate!"</p>
+              </blockquote>
+            </div>
+            
+            <div class="testimonial">
+              <blockquote class="testimonial-content">
+                <div class="d-flex align-items-center mb-4">
+                  <div class="avatar bg-primary text-white rounded-circle me-3">JS</div>
+                  <div>
+                    <h6 class="mb-0">John Smith</h6>
+                    <div class="text-warning small">
+                      <i class="bi bi-star-fill" aria-hidden="true"></i>
+                      <i class="bi bi-star-fill" aria-hidden="true"></i>
+                      <i class="bi bi-star-fill" aria-hidden="true"></i>
+                      <i class="bi bi-star-fill" aria-hidden="true"></i>
+                      <i class="bi bi-star-half" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+                <p class="mb-0">"The emotion detection is surprisingly accurate, and the suggestions are actually helpful. Great tool for daily emotional check-ins."</p>
+              </blockquote>
+            </div>
+            
+            <div class="testimonial">
+              <blockquote class="testimonial-content">
+                <div class="d-flex align-items-center mb-4">
+                  <div class="avatar bg-primary text-white rounded-circle me-3">AM</div>
+                  <div>
+                    <h6 class="mb-0">Alex Morgan</h6>
+                    <div class="text-warning small">
+                      <i class="bi bi-star-fill" aria-hidden="true"></i>
+                      <i class="bi bi-star-fill" aria-hidden="true"></i>
+                      <i class="bi bi-star-fill" aria-hidden="true"></i>
+                      <i class="bi bi-star-fill" aria-hidden="true"></i>
+                      <i class="bi bi-star-fill" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+                <p class="mb-0">"I've tried many mood tracking apps, but MoodSync's AI features and beautiful interface make it stand out from the crowd."</p>
+              </blockquote>
+            </div>
+          </div>
+          <div class="testimonial-controls">
+            <button class="testimonial-prev" aria-label="Previous testimonial">
+              <i class="bi bi-chevron-left" aria-hidden="true"></i>
+            </button>
+            <div class="testimonial-dots">
+              <span class="dot active" data-index="0" aria-label="Testimonial 1"></span>
+              <span class="dot" data-index="1" aria-label="Testimonial 2"></span>
+              <span class="dot" data-index="2" aria-label="Testimonial 3"></span>
+            </div>
+            <button class="testimonial-next" aria-label="Next testimonial">
+              <i class="bi bi-chevron-right" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="section-cta py-5 py-md-7 text-center">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <h2 class="display-5 mb-4">Ready to Start Your Emotional Wellness Journey?</h2>
+        <p class="lead mb-5">Join thousands of users who have improved their mental well-being with MoodSync</p>
+        <div class="d-grid gap-3 d-md-flex justify-content-md-center">
+          <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg px-5 py-3">Get Started</a>
+          <a href="{{ url_for('about') }}" class="btn btn-outline-primary btn-lg px-5 py-3">Learn More</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Color Variables */
+  :root {
+    --primary: #6f42c1;
+    --primary-gradient: linear-gradient(135deg, #6f42c1 0%, #6a11cb 100%);
+    --secondary: #6c757d;
+    --success: #198754;
+    --info: #0dcaf0;
+    --warning: #ffc107;
+    --danger: #dc3545;
+    --light: #f8f9fa;
+    --dark: #212529;
+    --body-bg: #ffffff;
+    --card-bg: #ffffff;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --transition: all 0.25s ease;
+    --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+  }
+
+  /* Consistent Spacing */
+  .py-7 {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+  }
+
+  /* Animated Background */
+  .animated-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+  }
+  
+  .animated-background .shape {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.1;
+    animation: float 20s infinite ease-in-out;
+  }
+  
+  .shape-1 {
+    width: 300px;
+    height: 300px;
+    background: var(--primary);
+    top: -150px;
+    left: -150px;
+    animation-delay: 0s;
+  }
+  
+  .shape-2 {
+    width: 200px;
+    height: 200px;
+    background: var(--info);
+    bottom: -100px;
+    right: 10%;
+    animation-delay: -5s;
+  }
+  
+  .shape-3 {
+    width: 150px;
+    height: 150px;
+    background: var(--success);
+    top: 20%;
+    right: -75px;
+    animation-delay: -10s;
+  }
+  
+  .shape-4 {
+    width: 100px;
+    height: 100px;
+    background: var(--warning);
+    bottom: 10%;
+    left: 5%;
+    animation-delay: -7s;
+  }
+  
+  /* Hero Section */
+  .hero-section {
+    padding: 4rem 0;
+    position: relative;
+  }
+  
+  .hero-image {
+    max-height: 400px;
+    transition: var(--transition);
+  }
+  
+  .text-gradient {
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+  }
+  
+  .privacy-badge {
+    transition: var(--transition);
+  }
+  
+  .privacy-badge:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow);
+  }
+  
+  /* Section Titles */
+  .section-title {
+    position: relative;
+    display: inline-block;
+    padding-bottom: 15px;
+    margin-bottom: 1rem;
+  }
+  
+  .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: var(--primary-gradient);
+    border-radius: 3px;
+  }
+  
+  .text-center .section-title::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  /* How It Works Section */
+  .section-how-it-works {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .process-steps {
+    position: relative;
+  }
+  
+  .process-steps::before {
+    content: '';
+    position: absolute;
+    top: 140px;
+    left: 15%;
+    width: 70%;
+    height: 2px;
+    background: var(--primary);
+    opacity: 0.2;
+    z-index: 0;
+  }
+  
+  .step-card {
+    position: relative;
+    text-align: center;
+    padding: 2rem 1.5rem;
+    background: var(--card-bg);
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    z-index: 1;
+  }
+  
+  .step-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .step-number {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 40px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+  
+  .bg-primary-gradient {
+    background: var(--primary-gradient) !important;
+  }
+  
+  /* Features Section */
+  .section-features {
+    position: relative;
+  }
+  
+  .features-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .feature-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 1.5rem;
+    background: var(--card-bg);
+    border-radius: 10px;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+  }
+  
+  .feature-item:hover {
+    transform: translateX(10px);
+    box-shadow: var(--shadow);
+  }
+  
+  .feature-icon-sm {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(111, 66, 193, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-right: 1rem;
+    flex-shrink: 0;
+  }
+  
+  /* Testimonial Carousel */
+  .testimonial-carousel {
+    position: relative;
+    background: var(--card-bg);
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: var(--shadow);
+  }
+  
+  .testimonial-container {
+    position: relative;
+    min-height: 200px;
+    overflow: hidden;
+  }
+  
+  .testimonial {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+  }
+  
+  .testimonial.active {
+    position: relative;
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  .testimonial-content {
+    padding: 1.5rem;
+    background: var(--light);
+    border-radius: 10px;
+  }
+  
+  .testimonial-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1.5rem;
+    gap: 1rem;
+  }
+  
+  .testimonial-prev,
+  .testimonial-next {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--primary);
+    background: transparent;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    cursor: pointer;
+  }
+  
+  .testimonial-prev:hover,
+  .testimonial-next:hover {
+    background: var(--primary);
+    color: white;
+  }
+  
+  .testimonial-dots {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #dee2e6;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  
+  .dot.active {
+    background: var(--primary);
+    transform: scale(1.2);
+  }
+  
+  /* CTA Section */
+  .section-cta {
+    background: var(--primary-gradient);
+    color: white;
+  }
+  
+  .section-cta .btn-primary {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+  }
+  
+  .section-cta .btn-outline-primary {
+    background: transparent;
+    border-color: white;
+    color: white;
+  }
+  
+  .section-cta .btn-outline-primary:hover {
+    background: white;
+    color: var(--primary);
+  }
+  
+  /* Button Styles */
+  .btn {
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+  }
+  
+  .btn:active {
+    transform: translateY(-1px);
+  }
+  
+  /* Animations */
+  @keyframes float {
+    0% {
+      transform: translateY(0) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-15px) rotate(3deg);
+    }
+    100% {
+      transform: translateY(0) rotate(0deg);
+    }
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 992px) {
+    .process-steps::before {
+      display: none;
+    }
+    
+    .feature-item {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    
+    .feature-icon-sm {
+      margin-right: 0;
+      margin-bottom: 1rem;
+    }
+    
+    .py-7 {
+      padding-top: 3rem;
+      padding-bottom: 3rem;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .hero-section {
+      text-align: center;
+    }
+    
+    .d-md-flex.justify-content-md-start {
+      justify-content: center !important;
+    }
+    
+    .privacy-badge {
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .section-title::after {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .display-4 {
+      font-size: calc(1.375rem + 1.5vw);
+    }
+    
+    .display-5 {
+      font-size: calc(1.3rem + 1.5vw);
+    }
+    
+    .display-6 {
+      font-size: calc(1.275rem + 0.3vw);
+    }
+    
+    .lead {
+      font-size: 1.1rem;
+    }
+    
+    .btn-lg {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Testimonial carousel functionality
+    const testimonials = document.querySelectorAll('.testimonial');
+    const dots = document.querySelectorAll('.dot');
+    const prevBtn = document.querySelector('.testimonial-prev');
+    const nextBtn = document.querySelector('.testimonial-next');
+    let currentTestimonial = 0;
+    
+    function showTestimonial(index) {
+      testimonials.forEach(testimonial => testimonial.classList.remove('active'));
+      dots.forEach(dot => dot.classList.remove('active'));
+      
+      testimonials[index].classList.add('active');
+      dots[index].classList.add('active');
+      currentTestimonial = index;
+    }
+    
+    // Next testimonial
+    nextBtn.addEventListener('click', () => {
+      let nextIndex = (currentTestimonial + 1) % testimonials.length;
+      showTestimonial(nextIndex);
+    });
+    
+    // Previous testimonial
+    prevBtn.addEventListener('click', () => {
+      let prevIndex = (currentTestimonial - 1 + testimonials.length) % testimonials.length;
+      showTestimonial(prevIndex);
+    });
+    
+    // Dot navigation
+    dots.forEach((dot, index) => {
+      dot.addEventListener('click', () => {
+        showTestimonial(index);
+      });
+    });
+    
+    // Auto-rotate testimonials
+    let testimonialInterval = setInterval(() => {
+      let nextIndex = (currentTestimonial + 1) % testimonials.length;
+      showTestimonial(nextIndex);
+    }, 5000);
+    
+    // Pause auto-rotation when interacting with controls
+    const testimonialControls = document.querySelector('.testimonial-controls');
+    testimonialControls.addEventListener('mouseenter', () => {
+      clearInterval(testimonialInterval);
+    });
+    
+    testimonialControls.addEventListener('mouseleave', () => {
+      testimonialInterval = setInterval(() => {
+        let nextIndex = (currentTestimonial + 1) % testimonials.length;
+        showTestimonial(nextIndex);
+      }, 5000);
+    });
+    
+    // Accessibility improvements - keyboard navigation
+    prevBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        let prevIndex = (currentTestimonial - 1 + testimonials.length) % testimonials.length;
+        showTestimonial(prevIndex);
+      }
+    });
+    
+    nextBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        let nextIndex = (currentTestimonial + 1) % testimonials.length;
+        showTestimonial(nextIndex);
+      }
+    });
+    
+    dots.forEach((dot, index) => {
+      dot.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          showTestimonial(index);
+        }
+      });
+      
+      // Make dots focusable
+      dot.setAttribute('tabindex', '0');
+    });
+  });
+</script>
+{% endblock %}

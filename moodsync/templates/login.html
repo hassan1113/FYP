@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Login - MoodSync{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+        <div class="card shadow-lg border-0 rounded-lg mt-5 fade-in">
+            <div class="card-header bg-primary text-white text-center">
+                <h3 class="font-weight-light my-2"><i class="bi bi-person-circle me-2"></i>Login</h3>
+            </div>
+            <div class="card-body slide-up" style="animation-delay: 0.2s;">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <form method="POST" action="{{ url_for('login') }}">
+                    <div class="form-floating mb-3">
+                        <input class="form-control" id="username" name="username" type="text" placeholder="Username" required />
+                        <label for="username">Username</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input class="form-control" id="password" name="password" type="password" placeholder="Password" required />
+                        <label for="password">Password</label>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" id="remember" name="remember" type="checkbox" />
+                        <label class="form-check-label" for="remember">Remember me</label>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
+                        <button type="submit" class="btn btn-primary w-100 pulse">Login</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center py-3 slide-up" style="animation-delay: 0.4s;">
+                <div class="small">
+                    <a href="{{ url_for('register') }}" class="text-decoration-none">
+                        Need an account? Sign up!
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add animation to form elements
+        const formElements = document.querySelectorAll('.form-floating, .form-check, .d-flex');
+        formElements.forEach((element, index) => {
+            element.classList.add('fade-in');
+            element.style.animationDelay = `${0.3 + (index * 0.1)}s`;
+        });
+        
+        // Add subtle animation to the login button on hover
+        const loginButton = document.querySelector('button[type="submit"]');
+        loginButton.addEventListener('mouseover', function() {
+            this.classList.add('pulse');
+        });
+        loginButton.addEventListener('mouseout', function() {
+            this.classList.remove('pulse');
+        });
+    });
+</script>
+{% endblock %}

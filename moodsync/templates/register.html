@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Register - MoodSync{% endblock %}
+
+{% block content %}
+<style>
+    @media (max-width: 768px) {
+        .card {
+            margin-top: 1.5rem !important;
+            margin-bottom: 1.5rem !important;
+        }
+        
+        .card-header h3 {
+            font-size: 1.5rem;
+        }
+        
+        .form-floating {
+            margin-bottom: 0.75rem !important;
+        }
+        
+        .row.mb-3 {
+            margin-bottom: 0.5rem !important;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .card {
+            margin-top: 1rem !important;
+            margin-bottom: 1rem !important;
+            border-radius: 0.5rem !important;
+        }
+        
+        .card-header h3 {
+            font-size: 1.25rem;
+        }
+        
+        .card-body {
+            padding: 1.25rem;
+        }
+        
+        .form-floating label {
+            font-size: 0.9rem;
+        }
+        
+        .btn-lg {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+        }
+    }
+</style>
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10 col-sm-11 col-11">
+        <div class="card shadow-lg border-0 rounded-lg mt-4 mb-4 fade-in">
+            <div class="card-header bg-primary text-white text-center">
+                <h3 class="font-weight-light my-2"><i class="bi bi-person-plus-fill me-2"></i>Create Account</h3>
+            </div>
+            <div class="card-body slide-up" style="animation-delay: 0.2s;">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <form method="POST" action="{{ url_for('register') }}">
+                    <div class="row mb-3 g-2">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3 mb-md-0">
+                                <input class="form-control" id="username" name="username" type="text" placeholder="Username" required />
+                                <label for="username">Username</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input class="form-control" id="email" name="email" type="email" placeholder="name@example.com" required />
+                                <label for="email">Email address</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3 g-2">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3 mb-md-0">
+                                <input class="form-control" id="first_name" name="first_name" type="text" placeholder="First Name" />
+                                <label for="first_name">First Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input class="form-control" id="last_name" name="last_name" type="text" placeholder="Last Name" />
+                                <label for="last_name">Last Name</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input class="form-control" id="password" name="password" type="password" placeholder="Password" required />
+                                <label for="password">Password</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input class="form-control" id="confirm_password" name="confirm_password" type="password" placeholder="Confirm Password" required />
+                                <label for="confirm_password">Confirm Password</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 mb-0">
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg pulse">Create Account</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center py-3 slide-up" style="animation-delay: 0.4s;">
+                <div class="small">
+                    <a href="{{ url_for('login') }}" class="text-decoration-none">
+                        Have an account? Go to login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add animation to form elements
+        const formRows = document.querySelectorAll('.row.mb-3');
+        formRows.forEach((row, index) => {
+            row.classList.add('fade-in');
+            row.style.animationDelay = `${0.3 + (index * 0.15)}s`;
+        });
+        
+        // Password validation
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('confirm_password');
+        const form = document.querySelector('form');
+        
+        form.addEventListener('submit', function(event) {
+            if (password.value !== confirmPassword.value) {
+                event.preventDefault();
+                alert('Passwords do not match!');
+                confirmPassword.classList.add('is-invalid');
+            }
+        });
+        
+        confirmPassword.addEventListener('input', function() {
+            if (password.value === confirmPassword.value) {
+                confirmPassword.classList.remove('is-invalid');
+                confirmPassword.classList.add('is-valid');
+            } else {
+                confirmPassword.classList.remove('is-valid');
+                confirmPassword.classList.add('is-invalid');
+            }
+        });
+        
+        // Add subtle animation to the register button on hover
+        const registerButton = document.querySelector('button[type="submit"]');
+        registerButton.addEventListener('mouseover', function() {
+            this.classList.add('pulse');
+        });
+        registerButton.addEventListener('mouseout', function() {
+            this.classList.remove('pulse');
+        });
+    });
+</script>
+{% endblock %}
