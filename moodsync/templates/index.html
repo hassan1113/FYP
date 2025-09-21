@@ -244,7 +244,6 @@
 </section>
 {% endblock %}
 
-{% block extra_css %}
 <style>
   /* Color Variables */
   :root {
@@ -767,6 +766,33 @@
       
       // Make dots focusable
       dot.setAttribute('tabindex', '0');
+    });
+    
+    // Initialize AOS
+    if (typeof AOS !== 'undefined') {
+      AOS.init({
+        duration: 800,
+        easing: 'ease-in-out',
+        once: true
+      });
+    }
+    
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        
+        const targetId = this.getAttribute('href');
+        if (targetId === '#') return;
+        
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+          window.scrollTo({
+            top: targetElement.offsetTop - 70,
+            behavior: 'smooth'
+          });
+        }
+      });
     });
   });
 </script>

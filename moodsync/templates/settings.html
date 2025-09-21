@@ -4,12 +4,31 @@
 
 {% block extra_css %}
 <style>
+    .list-group-item {
+        transition: all 0.3s ease;
+        border-left: 3px solid transparent;
+    }
+    
+    .list-group-item:hover {
+        transform: translateX(5px);
+        background-color: rgba(var(--bs-primary-rgb), 0.05);
+    }
+    
+    .list-group-item.active {
+        border-left: 3px solid var(--bs-primary);
+        background-color: rgba(var(--bs-primary-rgb), 0.1);
+        color: var(--bs-primary);
+    }
+    
     .card {
         transition: all 0.3s ease;
         border: none;
         border-radius: 12px;
         overflow: hidden;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .card:hover {
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
     }
     
     .btn {
@@ -28,12 +47,25 @@
     
     /* Animation classes */
     .fade-in {
-        animation: fadeIn 0.5s ease forwards;
+        opacity: 0;
+        transition: opacity 1s ease;
     }
     
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
+    .slide-up {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    
+    .slide-right {
+        opacity: 0;
+        transform: translateX(-30px);
+        transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    
+    .animated {
+        opacity: 1;
+        transform: translateY(0) translateX(0);
     }
     
     /* Profile picture styles */
@@ -73,6 +105,17 @@
         transform: scale(1.1);
     }
     
+    /* Toggle switch for notifications */
+    .form-switch .form-check-input {
+        width: 3em;
+        height: 1.5em;
+    }
+    
+    .form-switch .form-check-input:checked {
+        background-color: var(--bs-primary);
+        border-color: var(--bs-primary);
+    }
+    
     /* Settings card highlight */
     .settings-card {
         border-top: 4px solid var(--bs-primary);
@@ -81,177 +124,132 @@
 {% endblock %}
 
 {% block content %}
-<div class="container py-4 fade-in">
-    <div class="row justify-content-center">
-        <div class="col-lg-8 col-md-10 col-sm-12">
-            <div class="text-center mb-4">
-                <h1 class="mb-2">Account Settings</h1>
-                <p class="text-muted">Update your profile information</p>
-            </div>
-            
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-            
-            <div class="card settings-card">
-                <div class="card-body p-4">
-                    <form id="settings-form" method="post" action="{{ url_for('settings') }}" enctype="multipart/form-data">
-                        <input type="hidden" name="form_type" value="profile">
-                        
-                        <!-- Profile Picture -->
-                        <div class="profile-picture-container mb-4">
-                            <img src="{{ user.profile_image if user and user.profile_image else url_for('static', filename='images/default-profile.png') }}" 
-                                alt="Profile Picture" class="profile-picture">
-                            <label for="profile_picture" class="profile-picture-edit">
-                                <i class="bi bi-camera"></i>
-                            </label>
-                            <input type="file" id="profile_picture" name="profile_picture" class="d-none" accept="image/*">
-                            <div class="text-center mt-2">
-                                <small class="text-muted">Click the camera icon to change your profile picture</small>
-                            </div>
-                        </div>
-                        
-                        <!-- Full Name -->
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Full Name</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                <input type="text" class="form-control" id="name" name="name" value="{{ user.first_name + ' ' + user.last_name if user and user.first_name and user.last_name else '' }}" required>
-                            </div>
-                        </div>
-                        
-                        <!-- Email -->
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                <input type="email" class="form-control" id="email" name="email" value="{{ user.email if user else '' }}" required>
-                            </div>
-                        </div>
-                        
-                        <hr class="my-4">
-                        
-                        <!-- Password Change Section -->
-                        <h5 class="mb-3">Change Password</h5>
-                        
-                        <div class="mb-3">
-                            <label for="current_password" class="form-label">Current Password</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                                <input type="password" class="form-control" id="current_password" name="current_password">
-                            </div>
-                            <div class="form-text">Leave blank if you don't want to change your password</div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="new_password" class="form-label">New Password</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-key"></i></span>
-                                <input type="password" class="form-control" id="new_password" name="new_password">
-                            </div>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <label for="confirm_password" class="form-label">Confirm New Password</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
-                                <input type="password" class="form-control" id="confirm_password" name="confirm_password">
-                            </div>
-                        </div>
-                        
-                        <!-- Save Button -->
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="bi bi-check-circle me-2"></i> Save Changes
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+<div class="row mb-4 fade-in">
+    <div class="col">
+        <h1 class="mb-3">Settings</h1>
+        <p class="lead">Customize your MoodSync experience</p>
     </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize animations
-        setTimeout(function() {
-            document.querySelectorAll('.fade-in, .slide-up, .slide-right').forEach(function(element) {
-                element.classList.add('animated');
-            });
-        }, 100);
-        
-        // Profile picture preview
-        const profilePicInput = document.getElementById('profile_picture');
-        if (profilePicInput) {
-            profilePicInput.addEventListener('change', function() {
-                if (this.files && this.files[0]) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        document.querySelector('.profile-picture').src = e.target.result;
-                    }
-                    reader.readAsDataURL(this.files[0]);
-                }
-            });
-        }
-        
-        // Add animation when switching tabs
-        document.querySelectorAll('[data-bs-toggle="list"]').forEach(function(tabEl) {
-            tabEl.addEventListener('shown.bs.tab', function(event) {
-                const targetId = event.target.getAttribute('href');
-                const targetPane = document.querySelector(targetId);
-                const card = targetPane.querySelector('.card');
-                
-                // Reset and re-apply animation
-                if (card) {
-                    card.classList.remove('animated');
-                    setTimeout(function() {
-                        card.classList.add('animated');
-                    }, 10);
-                }
-            });
-        });
-        
-        // Enable/disable notification settings based on checkbox
-        const enableNotifications = document.getElementById('enable_notifications');
-        if (enableNotifications) {
-            enableNotifications.addEventListener('change', function() {
-                const reminderFrequency = document.querySelector('select[name="reminder_frequency"]');
-                const reminderTime = document.getElementById('reminder_time');
-                
-                reminderFrequency.disabled = !this.checked;
-                reminderTime.disabled = !this.checked;
-            });
-        }
-        
-        // Handle tab persistence through page reloads
-        const hash = window.location.hash;
-        if (hash) {
-            const tab = document.querySelector(`#settings-tabs a[href="${hash}"]`);
-            if (tab) {
-                tab.click();
-            }
-        }
-        
-        // Update URL when tab changes
-        const tabLinks = document.querySelectorAll('#settings-tabs a');
-        tabLinks.forEach(tab => {
-            tab.addEventListener('shown.bs.tab', function(event) {
-                window.location.hash = event.target.getAttribute('href');
-            });
-        });
-    });
-</script>
-{% endblock %}
+<div class="row g-3">
+    <div class="col-lg-4 col-md-12 mb-4 slide-right" style="animation-delay: 0.1s;">
+        <div class="list-group shadow-sm" id="settings-tabs" role="tablist">
+            <a class="list-group-item list-group-item-action active" id="profile-tab" data-bs-toggle="list" href="#profile" role="tab" aria-controls="profile">
+                <i class="bi bi-person-circle me-2"></i>Profile
+            </a>
+            <a class="list-group-item list-group-item-action" id="account-tab" data-bs-toggle="list" href="#account" role="tab" aria-controls="account">
+                <i class="bi bi-gear me-2"></i>Account
+            </a>
+            <a class="list-group-item list-group-item-action" id="preferences-tab" data-bs-toggle="list" href="#preferences" role="tab" aria-controls="preferences">
+                <i class="bi bi-sliders me-2"></i>Preferences
+            </a>
+            <a class="list-group-item list-group-item-action" id="notifications-tab" data-bs-toggle="list" href="#notifications" role="tab" aria-controls="notifications">
+                <i class="bi bi-bell me-2"></i>Notifications
+            </a>
+            <a class="list-group-item list-group-item-action" id="privacy-tab" data-bs-toggle="list" href="#privacy" role="tab" aria-controls="privacy">
+                <i class="bi bi-shield-lock me-2"></i>Privacy
+            </a>
+            <a class="list-group-item list-group-item-action" id="data-tab" data-bs-toggle="list" href="#data" role="tab" aria-controls="data">
+                <i class="bi bi-database me-2"></i>Data Management
+            </a>
+            <a class="list-group-item list-group-item-action" id="connected-accounts-tab" data-bs-toggle="list" href="#connected-accounts" role="tab" aria-controls="connected-accounts">
+                <i class="bi bi-link-45deg me-2"></i>Connected Accounts
+            </a>
+            <a class="list-group-item list-group-item-action" id="subscription-tab" data-bs-toggle="list" href="#subscription" role="tab" aria-controls="subscription">
+                <i class="bi bi-credit-card me-2"></i>Subscription
+            </a>
+        </div>
+    </div>
+    
+    <div class="col-lg-8 col-md-12 slide-up" style="animation-delay: 0.2s;">
+        <div class="tab-content">
+            <!-- Profile Settings -->
+            <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                <div class="card shadow-sm fade-in settings-card" style="animation-delay: 0.3s;">
+                    <div class="card-header bg-gradient">
+                        <h5 class="mb-0">Profile Settings</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="profile-form" method="post" action="{{ url_for('settings') }}" enctype="multipart/form-data">
+                            <input type="hidden" name="form_type" value="profile">
+                            
+                            <div class="profile-picture-container mb-4">
+                    <img src="{{ user.profile_picture if user and user.profile_picture else url_for('static', filename='images/default-profile.png') }}" 
+                         alt="Profile Picture" class="profile-picture">
+                    <label for="profile_picture" class="profile-picture-edit">
+                        <i class="bi bi-camera"></i>
+                    </label>
+                    <input type="file" id="profile_picture" name="profile_picture" class="d-none" accept="image/*">
+                    <div class="text-center mt-2">
+                        <small class="text-muted">Click the camera icon to change your profile picture</small>
+                    </div>
+                </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="username" class="form-label">Username</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                        <input type="text" class="form-control" id="username" name="username" value="{{ user.username if user else '' }}">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                        <input type="email" class="form-control" id="email" name="email" value="{{ user.email if user else '' }}">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="age" class="form-label">Age</label>
+                                    <input type="number" class="form-control" id="age" name="age" min="1" max="120" value="{{ user.age if user else '' }}">
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Gender</label>
+                                    <div class="d-flex gap-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="gender" id="gender-male" value="male" {% if user and user.gender == 'male' %}checked{% endif %}>
+                                            <label class="form-check-label" for="gender-male">Male</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="gender" id="gender-female" value="female" {% if user and user.gender == 'female' %}checked{% endif %}>
+                                            <label class="form-check-label" for="gender-female">Female</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="gender" id="gender-other" value="other" {% if user and user.gender == 'other' %}checked{% endif %}>
+                                            <label class="form-check-label" for="gender-other">Other</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="bio" class="form-label">Bio</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-file-text"></i></span>
+                                    <textarea class="form-control" id="bio" name="bio" rows="3" placeholder="Tell us a bit about yourself...">{{ user.bio if user and user.bio else '' }}</textarea>
+                                </div>
+                                <div class="form-text">A short description about yourself (optional)</div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-1"></i> Save Profile
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Preferences Settings -->
+            <div class="tab-pane fade" id="preferences" role="tabpanel" aria-labelledby="preferences-tab">
+                <div class="card shadow-sm fade-in" style="animation-delay: 0.3s;">
+                    <div class="card-header">
+                        <h5 class="mb-0">Preferences</h5>
                     </div>
                     <div class="card-body">
                         <form id="preferences-form" method="post" action="{{ url_for('settings') }}">
@@ -701,7 +699,9 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize animations
@@ -758,3 +758,4 @@
         });
     });
 </script>
+{% endblock %}

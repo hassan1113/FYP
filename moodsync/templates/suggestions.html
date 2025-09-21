@@ -88,13 +88,13 @@
     }
 </style>
 {% endblock %}
-</head>
-<body>
+
+{% block content %}
     <div class="container py-4">
         <div class="row mb-4 fade-in">
             <div class="col">
                 <h1 class="mb-3">Personalized Suggestions</h1>
-                <p class="lead">Based on your recent mood: <span class="badge bg-calm">Calm</span></p>
+                <p class="lead">Based on your recent mood: <span class="badge bg-primary">{{ emotion|title }}</span></p>
             </div>
         </div>
 
@@ -106,7 +106,7 @@
                     </div>
                     <div class="card-body">
                         <blockquote class="blockquote text-center pulse">
-                            <p>"The greatest weapon against stress is our ability to choose one thought over another." - William James</p>
+                            <p>{{ quote }}</p>
                         </blockquote>
                     </div>
                 </div>
@@ -114,62 +114,29 @@
         </div>
 
         <div class="row mb-4">
+            {% for suggestion in suggestions %}
             <div class="col-md-4 mb-4">
-                <div class="card shadow-sm h-100 slide-up" style="animation-delay: 0.1s;">
+                <div class="card shadow-sm h-100 slide-up" style="animation-delay: {{ loop.index * 0.1 }}s;">
                     <div class="card-header">
                         <h5 class="mb-0">
+                            {% if suggestion.type == 'activities' %}
                             <i class="bi bi-activity me-2"></i>Activity Suggestion
-                        </h5>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <p class="card-text flex-grow-1">Take a 15-minute walk in nature. Research shows that spending time in green spaces can reduce stress and improve mood.</p>
-                        <div class="mt-3">
-                            <p class="text-muted small">How helpful was this suggestion?</p>
-                            <div class="rating" data-suggestion-id="1">
-                                <i class="bi bi-star rating-star" data-rating="1"></i>
-                                <i class="bi bi-star rating-star" data-rating="2"></i>
-                                <i class="bi bi-star rating-star" data-rating="3"></i>
-                                <i class="bi bi-star rating-star" data-rating="4"></i>
-                                <i class="bi bi-star rating-star" data-rating="5"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-sm h-100 slide-up" style="animation-delay: 0.2s;">
-                    <div class="card-header">
-                        <h5 class="mb-0">
+                            {% elif suggestion.type == 'wellness' %}
                             <i class="bi bi-heart me-2"></i>Wellness Tip
-                        </h5>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <p class="card-text flex-grow-1">Practice deep breathing for 5 minutes. Inhale for 4 counts, hold for 4, exhale for 6. This activates your parasympathetic nervous system.</p>
-                        <div class="mt-3">
-                            <p class="text-muted small">How helpful was this suggestion?</p>
-                            <div class="rating" data-suggestion-id="2">
-                                <i class="bi bi-star rating-star" data-rating="1"></i>
-                                <i class="bi bi-star rating-star" data-rating="2"></i>
-                                <i class="bi bi-star rating-star" data-rating="3"></i>
-                                <i class="bi bi-star rating-star" data-rating="4"></i>
-                                <i class="bi bi-star rating-star" data-rating="5"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-sm h-100 slide-up" style="animation-delay: 0.3s;">
-                    <div class="card-header">
-                        <h5 class="mb-0">
+                            {% elif suggestion.type == 'productivity' %}
                             <i class="bi bi-lightning me-2"></i>Productivity Boost
+                            {% elif suggestion.type == 'social' %}
+                            <i class="bi bi-people me-2"></i>Social Connection
+                            {% else %}
+                            <i class="bi bi-lightbulb me-2"></i>Suggestion
+                            {% endif %}
                         </h5>
                     </div>
                     <div class="card-body d-flex flex-column">
-                        <p class="card-text flex-grow-1">Try the Pomodoro technique: 25 minutes of focused work followed by a 5-minute break. This can help maintain focus without burnout.</p>
+                        <p class="card-text flex-grow-1">{{ suggestion.content }}</p>
                         <div class="mt-3">
                             <p class="text-muted small">How helpful was this suggestion?</p>
-                            <div class="rating" data-suggestion-id="3">
+                            <div class="rating" data-suggestion-id="{{ suggestion.id|default(loop.index) }}">
                                 <i class="bi bi-star rating-star" data-rating="1"></i>
                                 <i class="bi bi-star rating-star" data-rating="2"></i>
                                 <i class="bi bi-star rating-star" data-rating="3"></i>
@@ -180,24 +147,10 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-sm h-100 slide-up" style="animation-delay: 0.4s;">
-                    <div class="card-header">
-                        <h5 class="mb-0">
-                            <i class="bi bi-people me-2"></i>Social Connection
-                        </h5>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <p class="card-text flex-grow-1">Reach out to a friend or family member today. Social connections are vital for emotional well-being and can boost your mood significantly.</p>
-                        <div class="mt-3">
-                            <p class="text-muted small">How helpful was this suggestion?</p>
-                            <div class="rating" data-suggestion-id="4">
-                                <i class="bi bi-star rating-star" data-rating="1"></i>
-                                <i class="bi bi-star rating-star" data-rating="2"></i>
-                                <i class="bi bi-star rating-star" data-rating="3"></i>
-                                <i class="bi bi-star rating-star" data-rating="4"></i>
-                                <i class="bi bi-star rating-star" data-rating="5"></i>
-                            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
                         </div>
                     </div>
                 </div>

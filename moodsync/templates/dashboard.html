@@ -675,8 +675,7 @@
                                         <span class="badge bg-{{ entry.detected_emotion.lower() }}">{{
                                             entry.detected_emotion }}</span>
                                     </td>
-                                    <td class="d-none d-md-table-cell">{{ "%.2f"|format(entry.confidence_score *
-                                        100) }}%</td>
+                                    <td class="d-none d-md-table-cell">{% if entry.confidence_score is not none %}{{ "%.2f"|format(entry.confidence_score * 100) }}%{% else %}N/A{% endif %}</td>
                                     <td class="d-none d-md-table-cell">{{ entry.context or 'N/A' }}</td>
                                     <td class="d-none d-lg-table-cell">{{ entry.notes or 'N/A' }}</td>
                                 </tr>
@@ -862,10 +861,10 @@
     // Process emotion counts
     {% if mood_stats.emotion_counts %}
     const emotionCounts = [];
-    {% for emotion_data in mood_stats.emotion_counts %}
+    {% for item in mood_stats.emotion_counts %}
     emotionCounts.push({
-        detected_emotion: '{{ emotion_data.detected_emotion }}',
-        count: {{ emotion_data.count }}
+        detected_emotion: '{{ item.detected_emotion }}',
+        count: {{ item.count }}
             });
     {% endfor %}
     moodData.week.emotion_counts = emotionCounts;
@@ -1081,6 +1080,6 @@
             element.classList.add('animated');
         }, 100);
     });
-        });
+});
 </script>
 {% endblock %}

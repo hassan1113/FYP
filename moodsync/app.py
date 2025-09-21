@@ -106,43 +106,6 @@ def generate_report():
     # For demo purposes, return success
     return jsonify({'success': True, 'message': 'Report generated successfully'})
 
-@app.route('/export_data')
-@login_required
-def export_data():
-    user_id = session.get('user_id')
-    
-    # Get all mood entries for the user
-    mood_entries = db_manager.get_mood_history(user_id=user_id, days=3650)  # All time
-    
-    # Create CSV content
-    import csv
-    from io import StringIO
-    
-    csv_data = StringIO()
-    csv_writer = csv.writer(csv_data)
-    
-    # Write header
-    csv_writer.writerow(['Date', 'Emotion', 'Confidence', 'Context', 'Notes'])
-    
-    # Write data rows
-    for entry in mood_entries:
-        csv_writer.writerow([
-            entry['timestamp'],
-            entry['detected_emotion'],
-            f"{entry['confidence_score'] * 100:.2f}%" if entry['confidence_score'] else 'N/A',
-            entry['context'] or 'N/A',
-            entry['notes'] or 'N/A'
-        ])
-    
-    # Prepare response
-    response = app.response_class(
-        csv_data.getvalue(),
-        mimetype='text/csv',
-        headers={'Content-Disposition': 'attachment; filename=moodsync_data.csv'}
-    )
-    
-    return response
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if 'user_id' in session:
@@ -253,72 +216,52 @@ def settings():
     if request.method == 'POST':
         form_type = request.form.get('form_type')
         
+        # Add flash message for all form submissions
+        flash('Settings updated successfully!', 'success')
+        
         if form_type == 'profile':
             # Handle profile form
             name = request.form.get('name')
             email = request.form.get('email')
-            
-            # Handle password change if provided
-            current_password = request.form.get('current_password')
-            new_password = request.form.get('new_password')
-            confirm_password = request.form.get('confirm_password')
-            
-            # Handle profile picture upload
-            profile_picture = None
-            if 'profile_picture' in request.files:
-                file = request.files['profile_picture']
-                if file and file.filename != '':
-                    if allowed_file(file.filename):
-                        filename = secure_filename(file.filename)
-                        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                        file.save(file_path)
-                        profile_picture = f'/uploads/{filename}'
-                    else:
-                        flash('Invalid file type. Please upload an image file.', 'danger')
-                        return redirect(url_for('settings'))
+            age = request.form.get('age')
+            gender = request.form.get('gender')
+            bio = request.form.get('bio', '')
             
             # Validate inputs
             if not name or not email:
                 flash('Name and email are required', 'danger')
+                return redirect(url_for('settings'))
+                
+            # Validate age
+            if age:
+                try:
+                    age = int(age)
+                    if age < 1 or age > 120:
+                        flash('Age must be between 1 and 120', 'danger')
+                        return redirect(url_for('settings'))
+                except ValueError:
+                    flash('Invalid age value', 'danger')
+                    return redirect(url_for('settings'))
+            
+            # Validate gender
+            if gender and gender not in ['male', 'female', 'other', 'prefer_not_to_say']:
+                flash('Invalid gender value', 'danger')
                 return redirect(url_for('settings'))
             
             # Update user profile
             conn = get_db_connection()
             
             try:
-                # Split name into first_name and last_name
-                name_parts = name.split(' ', 1)
-                first_name = name_parts[0]
-                last_name = name_parts[1] if len(name_parts) > 1 else ''
+                # Check if bio column exists
+                try:
+                    conn.execute('SELECT bio FROM users WHERE id = ?', (user_id,))
+                except sqlite3.OperationalError:
+                    # Add bio column if it doesn't exist
+                    conn.execute('ALTER TABLE users ADD COLUMN bio TEXT')
                 
                 # Update user profile
-                if profile_picture:
-                    conn.execute('UPDATE users SET first_name = ?, last_name = ?, email = ?, profile_image = ? WHERE id = ?', 
-                                (first_name, last_name, email, profile_picture, user_id))
-                else:
-                    conn.execute('UPDATE users SET first_name = ?, last_name = ?, email = ? WHERE id = ?', 
-                                (first_name, last_name, email, user_id))
-                
-                # Handle password change if requested
-                if current_password and new_password and confirm_password:
-                    # Verify current password
-                    user = conn.execute('SELECT password FROM users WHERE id = ?', (user_id,)).fetchone()
-                    if not user or not check_password_hash(user['password'], current_password):
-                        flash('Current password is incorrect', 'danger')
-                        conn.close()
-                        return redirect(url_for('settings'))
-                    
-                    # Verify new passwords match
-                    if new_password != confirm_password:
-                        flash('New passwords do not match', 'danger')
-                        conn.close()
-                        return redirect(url_for('settings'))
-                    
-                    # Update password
-                    hashed_password = generate_password_hash(new_password)
-                    conn.execute('UPDATE users SET password = ? WHERE id = ?', (hashed_password, user_id))
-                    flash('Password updated successfully', 'success')
-                
+                conn.execute('UPDATE users SET name = ?, email = ?, bio = ? WHERE id = ?', 
+                            (name, email, bio, user_id))
                 conn.commit()
                 flash('Profile updated successfully', 'success')
             except sqlite3.Error as e:
@@ -361,11 +304,25 @@ def settings():
                         FOREIGN KEY (user_id) REFERENCES users (id)
                     );
                 ''')                
-                # Insert preferences
-                conn.execute('INSERT INTO preferences (user_id, theme, dashboard_layout, show_suggestions, language) VALUES (?, ?, ?, ?, ?)',
-                            (user_id, theme, dashboard_layout, show_suggestions, request.form.get('language', 'en')))
-                conn.commit()
-                flash('Preferences updated successfully', 'success')
+                conn.executescript('''
+                    CREATE TABLE IF NOT EXISTS preferences (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_id INTEGER,
+                        theme VARCHAR(20) DEFAULT 'light',
+                        dashboard_layout VARCHAR(20) DEFAULT 'grid',
+                        show_suggestions BOOLEAN DEFAULT 1,
+                        language VARCHAR(10) DEFAULT 'en',
+                        FOREIGN KEY (user_id) REFERENCES users (id)
+                    );
+                ''')                
+                # Try again after creating the table
+                try:
+                    conn.execute('INSERT INTO preferences (user_id, theme, dashboard_layout, show_suggestions, language) VALUES (?, ?, ?, ?, ?)',
+                                (user_id, theme, dashboard_layout, show_suggestions, request.form.get('language', 'en')))
+                    conn.commit()
+                    flash('Preferences updated successfully', 'success')
+                except sqlite3.Error as e:
+                    flash(f'Failed to update preferences: {str(e)}', 'danger')
             finally:
                 conn.close()
                 
@@ -426,6 +383,27 @@ def settings():
     except sqlite3.OperationalError:
         # If preferences table doesn't exist yet
         user_prefs = None
+        
+        # Create preferences table
+        conn.executescript('''
+            CREATE TABLE IF NOT EXISTS preferences (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER,
+                theme VARCHAR(20) DEFAULT 'light',
+                dashboard_layout VARCHAR(20) DEFAULT 'grid',
+                show_suggestions BOOLEAN DEFAULT 1,
+                language VARCHAR(10) DEFAULT 'en',
+                FOREIGN KEY (user_id) REFERENCES users (id)
+            );
+        ''')
+        
+        # Insert default preferences for user
+        conn.execute('INSERT INTO preferences (user_id, theme, dashboard_layout, show_suggestions, language) VALUES (?, ?, ?, ?, ?)',
+                    (user_id, 'light', 'standard', 1, 'en'))
+        conn.commit()
+        
+        # Get the newly created preferences
+        user_prefs = conn.execute('SELECT * FROM preferences WHERE user_id = ?', (user_id,)).fetchone()
     
     conn.close()
     return render_template('settings.html', user=user_data, preferences=user_prefs)
@@ -537,6 +515,67 @@ def mood_logger():
     return render_template('mood_logger.html', 
                           recent_moods=recent_moods,
                           mood_stats=mood_stats)
+                          
+@app.route('/save_mood', methods=['POST'])
+def save_mood():
+    # Check if user is logged in
+    if 'user_id' not in session:
+        return jsonify({'error': 'Authentication required'}), 401
+    
+    # Get user ID from session
+    user_id = session.get('user_id')
+    
+    # Get data from request
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'No data provided'}), 400
+    
+    # Extract mood data
+    emotion = data.get('emotion')
+    confidence_score = data.get('confidence', 0.0)  # Default to 0.0 if missing
+    intensity = data.get('intensity', 5)
+    notes = data.get('notes', '')
+    image_data = data.get('image')
+    
+    # Validate required fields
+    if not emotion:
+        return jsonify({'error': 'Emotion is required'}), 400
+    
+    try:
+        # Save image if provided
+        image_path = None
+        if image_data and image_data.startswith('data:image'):
+            # Extract base64 data
+            image_data = image_data.split(',')[1]
+            # Generate unique filename
+            filename = f"{uuid.uuid4()}.jpg"
+            image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            
+            # Save image to file
+            with open(image_path, "wb") as f:
+                f.write(base64.b64decode(image_data))
+            
+            # Use relative path for database
+            image_path = os.path.join('uploads', filename)
+        
+        # Connect to database
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Insert mood entry
+        cursor.execute('''
+            INSERT INTO moods (user_id, detected_emotion, confidence_score, intensity, notes, image_path, timestamp)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (user_id, emotion, confidence_score, intensity, notes, image_path, datetime.now()))
+        
+        # Commit changes and close connection
+        conn.commit()
+        conn.close()
+        
+        return jsonify({'success': True, 'message': 'Mood entry saved successfully'})
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/mood_log')
 @login_required
@@ -589,64 +628,6 @@ def rate_suggestion():
     success = db_manager.rate_suggestion(user_id, suggestion_id, rating)
     
     return jsonify({'success': success})
-
-@app.route('/save_mood', methods=['POST'])
-@login_required
-def save_mood():
-    if not request.is_json:
-        return jsonify({"error": "Request must be JSON"}), 400
-    
-    # Get user ID from session
-    user_id = session.get('user_id')
-    
-    # Get data from request
-    data = request.get_json()
-    emotion = data.get('emotion')
-    intensity = data.get('intensity', 5)
-    notes = data.get('notes', '')
-    image_data = data.get('image')
-    
-    if not emotion:
-        return jsonify({"error": "Emotion is required"}), 400
-    
-    # Save image if provided
-    image_path = None
-    if image_data:
-        # Create a unique filename
-        filename = f"{emotion.lower()}_{uuid.uuid4().hex}.jpg"
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        
-        # Save base64 image to file
-        image_data_clean = image_data.split(',')[1] if ',' in image_data else image_data
-        with open(file_path, "wb") as f:
-            f.write(base64.b64decode(image_data_clean))
-        
-        # Store relative path in database
-        image_path = os.path.join('uploads', filename)
-    
-    # Log mood in database
-    mood_id = db_manager.log_mood(
-        user_id=user_id,
-        emotion=emotion,
-        confidence=1.0,  # Since user selected it manually
-        manual_mood=True,
-        intensity=intensity,
-        notes=notes,
-        context=None,
-        image_path=image_path
-    )
-    
-    # Get suggestions based on detected emotion
-    suggestions = suggestion_engine.get_suggestions(emotion)
-    
-    # Save suggestions to database
-    db_manager.save_suggestions(mood_id, suggestions)
-    
-    return jsonify({
-        'success': True,
-        'mood_id': mood_id,
-        'message': 'Mood entry saved successfully'
-    })
 
 @app.route('/about')
 def about():

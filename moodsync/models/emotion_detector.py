@@ -46,9 +46,6 @@ class EmotionDetector:
         # Convert base64 to image
         image = self.base64_to_image(image_data)
         
-        # Apply horizontal flip to correct the mirroring effect
-        image = cv2.flip(image, 1)
-        
         # Detect face and predict emotion
         faces = self.detect_faces(image)
         if len(faces) == 0:
