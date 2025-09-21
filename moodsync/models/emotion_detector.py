@@ -53,7 +53,7 @@ class EmotionDetector:
         
         # Process largest face
         face = self.extract_face(image, faces[0])
-        emotion_probs = self.model.predict(face)
+        emotion_probs = self.model(face, training=False).numpy()
         emotion_index = np.argmax(emotion_probs)
         confidence = emotion_probs[0][emotion_index]
         
@@ -116,7 +116,7 @@ class EmotionDetector:
             face = self.extract_face(frame, (x, y, w, h))
             
             # Predict emotion
-            emotion_probs = self.model.predict(face)
+            emotion_probs = self.model(face, training=False).numpy()
             emotion_index = np.argmax(emotion_probs)
             confidence = emotion_probs[0][emotion_index]
             emotion = self.emotion_labels[emotion_index]

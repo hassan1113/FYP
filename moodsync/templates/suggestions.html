@@ -90,23 +90,31 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container py-4">
+    <div class="container py-5">
         <div class="row mb-4 fade-in">
-            <div class="col">
-                <h1 class="mb-3">Personalized Suggestions</h1>
-                <p class="lead">Based on your recent mood: <span class="badge bg-primary">{{ emotion|title }}</span></p>
+            <div class="col text-center">
+                <h1 class="display-4 mb-3">Personalized Suggestions</h1>
+                <p class="lead">Based on your recent mood: 
+                    <span class="badge bg-primary px-3 py-2" style="font-size: 1rem; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+                        <i class="bi bi-emoji-smile me-2"></i>{{ emotion|title }}
+                    </span>
+                </p>
+                <hr class="my-4 w-50 mx-auto" style="opacity: 0.2;">
             </div>
         </div>
 
-        <div class="row mb-4">
+        <div class="row mb-5">
             <div class="col-12">
-                <div class="card shadow-sm slide-up" style="animation-delay: 0.1s;">
-                    <div class="card-header">
-                        <h5 class="mb-0">Daily Quote</h5>
+                <div class="card shadow slide-up" style="animation-delay: 0.1s; border-radius: 15px; background: linear-gradient(145deg, #f8f9fa, #ffffff);">
+                    <div class="card-header" style="background: linear-gradient(45deg, rgba(var(--bs-primary-rgb), 0.1), rgba(var(--bs-info-rgb), 0.2)); border-radius: 15px 15px 0 0;">
+                        <h5 class="mb-0 d-flex align-items-center">
+                            <i class="bi bi-quote me-2" style="font-size: 1.5rem;"></i>
+                            <span>Daily Inspiration</span>
+                        </h5>
                     </div>
                     <div class="card-body">
                         <blockquote class="blockquote text-center pulse">
-                            <p>{{ quote }}</p>
+                            <p style="font-size: 1.3rem; line-height: 1.6;">{{ quote }}</p>
                         </blockquote>
                     </div>
                 </div>
@@ -115,85 +123,94 @@
 
         <div class="row mb-4">
             {% for suggestion in suggestions %}
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-sm h-100 slide-up" style="animation-delay: {{ loop.index * 0.1 }}s;">
-                    <div class="card-header">
-                        <h5 class="mb-0">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card shadow h-100 slide-up" style="animation-delay: {{ loop.index * 0.1 }}s; border-radius: 15px; border: none; overflow: hidden;">
+                    <div class="card-header" style="background: linear-gradient(45deg, 
+                        {% if suggestion.type == 'activities' %}
+                            rgba(var(--bs-success-rgb), 0.2), rgba(var(--bs-info-rgb), 0.1)
+                        {% elif suggestion.type == 'wellness' %}
+                            rgba(var(--bs-danger-rgb), 0.1), rgba(var(--bs-warning-rgb), 0.1)
+                        {% elif suggestion.type == 'productivity' %}
+                            rgba(var(--bs-primary-rgb), 0.1), rgba(var(--bs-info-rgb), 0.1)
+                        {% elif suggestion.type == 'social' %}
+                            rgba(var(--bs-purple-rgb), 0.1), rgba(var(--bs-info-rgb), 0.1)
+                        {% else %}
+                            rgba(var(--bs-secondary-rgb), 0.1), rgba(var(--bs-light-rgb), 0.2)
+                        {% endif %}
+                    ); border-radius: 15px 15px 0 0;">
+                        <h5 class="mb-0 d-flex align-items-center">
                             {% if suggestion.type == 'activities' %}
-                            <i class="bi bi-activity me-2"></i>Activity Suggestion
+                            <i class="bi bi-activity me-2" style="font-size: 1.3rem; color: var(--bs-success);"></i>Activity Suggestion
                             {% elif suggestion.type == 'wellness' %}
-                            <i class="bi bi-heart me-2"></i>Wellness Tip
+                            <i class="bi bi-heart-fill me-2" style="font-size: 1.3rem; color: var(--bs-danger);"></i>Wellness Tip
                             {% elif suggestion.type == 'productivity' %}
-                            <i class="bi bi-lightning me-2"></i>Productivity Boost
+                            <i class="bi bi-lightning-charge-fill me-2" style="font-size: 1.3rem; color: var(--bs-primary);"></i>Productivity Boost
                             {% elif suggestion.type == 'social' %}
-                            <i class="bi bi-people me-2"></i>Social Connection
+                            <i class="bi bi-people-fill me-2" style="font-size: 1.3rem; color: var(--bs-purple);"></i>Social Connection
                             {% else %}
-                            <i class="bi bi-lightbulb me-2"></i>Suggestion
+                            <i class="bi bi-lightbulb-fill me-2" style="font-size: 1.3rem; color: var(--bs-warning);"></i>Suggestion
                             {% endif %}
                         </h5>
                     </div>
-                    <div class="card-body d-flex flex-column">
-                        <p class="card-text flex-grow-1">{{ suggestion.content }}</p>
-                        <div class="mt-3">
-                            <p class="text-muted small">How helpful was this suggestion?</p>
+                    <div class="card-body d-flex flex-column" style="background: linear-gradient(145deg, #f8f9fa, #ffffff);">
+                        <p class="card-text flex-grow-1" style="font-size: 1.05rem; line-height: 1.5;">{{ suggestion.content }}</p>
+                        <div class="mt-3 pt-3 border-top">
+                            <p class="text-muted small mb-2">How helpful was this suggestion?</p>
                             <div class="rating" data-suggestion-id="{{ suggestion.id|default(loop.index) }}">
-                                <i class="bi bi-star rating-star" data-rating="1"></i>
-                                <i class="bi bi-star rating-star" data-rating="2"></i>
-                                <i class="bi bi-star rating-star" data-rating="3"></i>
-                                <i class="bi bi-star rating-star" data-rating="4"></i>
-                                <i class="bi bi-star rating-star" data-rating="5"></i>
+                                <i class="bi bi-star-fill rating-star" data-rating="1" style="color: #e0e0e0;"></i>
+                                <i class="bi bi-star-fill rating-star" data-rating="2" style="color: #e0e0e0;"></i>
+                                <i class="bi bi-star-fill rating-star" data-rating="3" style="color: #e0e0e0;"></i>
+                                <i class="bi bi-star-fill rating-star" data-rating="4" style="color: #e0e0e0;"></i>
+                                <i class="bi bi-star-fill rating-star" data-rating="5" style="color: #e0e0e0;"></i>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             {% endfor %}
-        </div>
-    </div>
-{% endblock %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-sm h-100 slide-up" style="animation-delay: 0.5s;">
-                    <div class="card-header">
-                        <h5 class="mb-0">
-                            <i class="bi bi-music-note me-2"></i>Mindfulness
+            
+            <!-- Additional fixed suggestions -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card shadow h-100 slide-up" style="animation-delay: 0.5s; border-radius: 15px; border: none; overflow: hidden;">
+                    <div class="card-header" style="background: linear-gradient(45deg, rgba(var(--bs-info-rgb), 0.2), rgba(var(--bs-primary-rgb), 0.1)); border-radius: 15px 15px 0 0;">
+                        <h5 class="mb-0 d-flex align-items-center">
+                            <i class="bi bi-music-note-beamed me-2" style="font-size: 1.3rem; color: var(--bs-info);"></i>
+                            <span>Mindfulness</span>
                         </h5>
                     </div>
-                    <div class="card-body d-flex flex-column">
-                        <p class="card-text flex-grow-1">Try a guided meditation session. Even 10 minutes can help center your thoughts and reduce anxiety. Many free apps are available.</p>
-                        <div class="mt-3">
-                            <p class="text-muted small">How helpful was this suggestion?</p>
+                    <div class="card-body d-flex flex-column" style="background: linear-gradient(145deg, #f8f9fa, #ffffff);">
+                        <p class="card-text flex-grow-1" style="font-size: 1.05rem; line-height: 1.5;">Try a guided meditation session. Even 10 minutes can help center your thoughts and reduce anxiety. Many free apps are available.</p>
+                        <div class="mt-3 pt-3 border-top">
+                            <p class="text-muted small mb-2">How helpful was this suggestion?</p>
                             <div class="rating" data-suggestion-id="5">
-                                <i class="bi bi-star rating-star" data-rating="1"></i>
-                                <i class="bi bi-star rating-star" data-rating="2"></i>
-                                <i class="bi bi-star rating-star" data-rating="3"></i>
-                                <i class="bi bi-star rating-star" data-rating="4"></i>
-                                <i class="bi bi-star rating-star" data-rating="5"></i>
+                                <i class="bi bi-star-fill rating-star" data-rating="1" style="color: #e0e0e0;"></i>
+                                <i class="bi bi-star-fill rating-star" data-rating="2" style="color: #e0e0e0;"></i>
+                                <i class="bi bi-star-fill rating-star" data-rating="3" style="color: #e0e0e0;"></i>
+                                <i class="bi bi-star-fill rating-star" data-rating="4" style="color: #e0e0e0;"></i>
+                                <i class="bi bi-star-fill rating-star" data-rating="5" style="color: #e0e0e0;"></i>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-sm h-100 slide-up" style="animation-delay: 0.6s;">
-                    <div class="card-header">
-                        <h5 class="mb-0">
-                            <i class="bi bi-journal me-2"></i>Reflection
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card shadow h-100 slide-up" style="animation-delay: 0.6s; border-radius: 15px; border: none; overflow: hidden;">
+                    <div class="card-header" style="background: linear-gradient(45deg, rgba(var(--bs-warning-rgb), 0.2), rgba(var(--bs-light-rgb), 0.2)); border-radius: 15px 15px 0 0;">
+                        <h5 class="mb-0 d-flex align-items-center">
+                            <i class="bi bi-journal-text me-2" style="font-size: 1.3rem; color: var(--bs-warning);"></i>
+                            <span>Reflection</span>
                         </h5>
                     </div>
-                    <div class="card-body d-flex flex-column">
-                        <p class="card-text flex-grow-1">Journal about three things you're grateful for today. Gratitude practice has been shown to increase happiness and life satisfaction.</p>
-                        <div class="mt-3">
-                            <p class="text-muted small">How helpful was this suggestion?</p>
+                    <div class="card-body d-flex flex-column" style="background: linear-gradient(145deg, #f8f9fa, #ffffff);">
+                        <p class="card-text flex-grow-1" style="font-size: 1.05rem; line-height: 1.5;">Journal about three things you're grateful for today. Gratitude practice has been shown to increase happiness and life satisfaction.</p>
+                        <div class="mt-3 pt-3 border-top">
+                            <p class="text-muted small mb-2">How helpful was this suggestion?</p>
                             <div class="rating" data-suggestion-id="6">
-                                <i class="bi bi-star rating-star" data-rating="1"></i>
-                                <i class="bi bi-star rating-star" data-rating="2"></i>
-                                <i class="bi bi-star rating-star" data-rating="3"></i>
-                                <i class="bi bi-star rating-star" data-rating="4"></i>
-                                <i class="bi bi-star rating-star" data-rating="5"></i>
+                                <i class="bi bi-star-fill rating-star" data-rating="1" style="color: #e0e0e0;"></i>
+                                <i class="bi bi-star-fill rating-star" data-rating="2" style="color: #e0e0e0;"></i>
+                                <i class="bi bi-star-fill rating-star" data-rating="3" style="color: #e0e0e0;"></i>
+                                <i class="bi bi-star-fill rating-star" data-rating="4" style="color: #e0e0e0;"></i>
+                                <i class="bi bi-star-fill rating-star" data-rating="5" style="color: #e0e0e0;"></i>
                             </div>
                         </div>
                     </div>
@@ -201,22 +218,37 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row mb-5">
             <div class="col-md-6">
-                <div class="card shadow-sm slide-up" style="animation-delay: 0.7s;">
-                    <div class="card-header">
-                        <h5 class="mb-0">Need More Help?</h5>
+                <div class="card shadow h-100 slide-up" style="animation-delay: 0.7s; border-radius: 15px; border: none; overflow: hidden;">
+                    <div class="card-header" style="background: linear-gradient(45deg, rgba(var(--bs-purple-rgb), 0.2), rgba(var(--bs-info-rgb), 0.1)); border-radius: 15px 15px 0 0;">
+                        <h5 class="mb-0 d-flex align-items-center">
+                            <i class="bi bi-life-preserver me-2" style="font-size: 1.3rem; color: var(--bs-purple);"></i>
+                            <span>Need More Help?</span>
+                        </h5>
                     </div>
-                    <div class="card-body">
-                        <p>If you're experiencing persistent negative emotions or need additional support:</p>
-                        <ul>
-                            <li>Talk to a trusted friend or family member</li>
-                            <li>Consider speaking with a mental health professional</li>
-                            <li>Check out mental health resources online</li>
-                            <li>Remember that seeking help is a sign of strength</li>
+                    <div class="card-body" style="background: linear-gradient(145deg, #f8f9fa, #ffffff);">
+                        <p class="mb-3" style="font-size: 1.05rem;">If you're experiencing persistent negative emotions or need additional support:</p>
+                        <ul class="list-group list-group-flush mb-4">
+                            <li class="list-group-item bg-transparent border-0 d-flex align-items-center">
+                                <i class="bi bi-chat-heart me-3 text-primary"></i>
+                                <span>Talk to a trusted friend or family member</span>
+                            </li>
+                            <li class="list-group-item bg-transparent border-0 d-flex align-items-center">
+                                <i class="bi bi-person-check me-3 text-success"></i>
+                                <span>Consider speaking with a mental health professional</span>
+                            </li>
+                            <li class="list-group-item bg-transparent border-0 d-flex align-items-center">
+                                <i class="bi bi-globe me-3 text-info"></i>
+                                <span>Check out mental health resources online</span>
+                            </li>
+                            <li class="list-group-item bg-transparent border-0 d-flex align-items-center">
+                                <i class="bi bi-shield-plus me-3 text-danger"></i>
+                                <span>Remember that seeking help is a sign of strength</span>
+                            </li>
                         </ul>
                         <div class="d-grid gap-2">
-                            <a href="https://www.nimh.nih.gov/health/find-help" class="btn btn-outline-primary" target="_blank">
+                            <a href="https://www.nimh.nih.gov/health/find-help" class="btn btn-outline-primary" target="_blank" style="border-radius: 50px; padding: 10px 20px;">
                                 <i class="bi bi-link-45deg me-2"></i>Find Mental Health Resources
                             </a>
                         </div>
@@ -224,17 +256,24 @@
                 </div>
             </div>
             <div class="col-md-6">
-                <div class="card shadow-sm slide-up" style="animation-delay: 0.8s;">
-                    <div class="card-header">
-                        <h5 class="mb-0">Quick Actions</h5>
+                <div class="card shadow h-100 slide-up" style="animation-delay: 0.8s; border-radius: 15px; border: none; overflow: hidden;">
+                    <div class="card-header" style="background: linear-gradient(45deg, rgba(var(--bs-success-rgb), 0.2), rgba(var(--bs-info-rgb), 0.1)); border-radius: 15px 15px 0 0;">
+                        <h5 class="mb-0 d-flex align-items-center">
+                            <i class="bi bi-lightning-charge-fill me-2" style="font-size: 1.3rem; color: var(--bs-success);"></i>
+                            <span>Quick Actions</span>
+                        </h5>
                     </div>
-                    <div class="card-body">
-                        <div class="d-grid gap-2">
-                            <a href="{{ url_for('mood_logger') }}" class="btn btn-primary">
+                    <div class="card-body" style="background: linear-gradient(145deg, #f8f9fa, #ffffff);">
+                        <p class="mb-4" style="font-size: 1.05rem;">Continue your wellness journey with these quick actions:</p>
+                        <div class="d-grid gap-3">
+                            <a href="{{ url_for('mood_logger') }}" class="btn btn-primary" style="border-radius: 50px; padding: 12px 20px;">
                                 <i class="bi bi-camera me-2"></i>Log New Mood
                             </a>
-                            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary" style="border-radius: 50px; padding: 12px 20px;">
                                 <i class="bi bi-speedometer2 me-2"></i>Return to Dashboard
+                            </a>
+                            <a href="{{ url_for('analytics') }}" class="btn btn-outline-info" style="border-radius: 50px; padding: 12px 20px;">
+                                <i class="bi bi-graph-up me-2"></i>View Your Analytics
                             </a>
                         </div>
                     </div>
@@ -242,82 +281,121 @@
             </div>
         </div>
     </div>
-
+    
     {% block extra_js %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Helper function to check if element is in viewport
-            function isInViewport(element) {
-                const rect = element.getBoundingClientRect();
-                return (
-                    rect.top >= 0 &&
-                    rect.left >= 0 &&
-                    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-                    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-                );
-            }
-            
-            // Add animated class to elements that are already visible
-            setTimeout(function() {
-                document.querySelectorAll('.fade-in, .slide-up').forEach(function(element) {
-                    if (isInViewport(element)) {
-                        element.classList.add('animated');
-                    }
-                });
-            }, 100);
-            
-            // Create intersection observer for elements that come into view later
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('animated');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, {threshold: 0.1});
-            
-            // Observe all animation elements
-            document.querySelectorAll('.fade-in, .slide-up').forEach(element => {
-                observer.observe(element);
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Helper function to check if element is in viewport
+        function isInViewport(element) {
+            const rect = element.getBoundingClientRect();
+            return (
+                rect.top >= 0 &&
+                rect.left >= 0 &&
+                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+            );
+        }
+        
+        // Add animated class to elements that are already visible
+        setTimeout(function() {
+            document.querySelectorAll('.fade-in, .slide-up').forEach(function(element) {
+                if (isInViewport(element)) {
+                    element.classList.add('animated');
+                }
             });
-            
-            // Handle rating stars
-            const ratingStars = document.querySelectorAll('.rating-star');
-            
-            ratingStars.forEach(star => {
-                star.addEventListener('click', function() {
-                    const rating = this.dataset.rating;
-                    const suggestionId = this.parentElement.dataset.suggestionId;
-                    const stars = this.parentElement.querySelectorAll('.rating-star');
-                    
-                    // Update UI
-                    stars.forEach(s => {
-                        if (s.dataset.rating <= rating) {
-                            s.classList.remove('bi-star');
-                            s.classList.add('bi-star-fill', 'text-warning');
-                        } else {
-                            s.classList.remove('bi-star-fill', 'text-warning');
-                            s.classList.add('bi-star');
-                        }
-                    });
-                    
-                    // Simulate sending rating to server
-                    setTimeout(() => {
-                        // Show success message
-                        const thankYou = document.createElement('div');
-                        thankYou.className = 'text-success mt-2 small';
-                        thankYou.textContent = 'Thank you for your feedback!';
-                        this.parentElement.appendChild(thankYou);
-                        
-                        // Disable further rating
-                        stars.forEach(s => s.style.pointerEvents = 'none');
-                    }, 300);
+        }, 100);
+        
+        // Create intersection observer for elements that come into view later
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animated');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {threshold: 0.1});
+        
+        // Observe all animation elements
+        document.querySelectorAll('.fade-in, .slide-up').forEach(element => {
+            observer.observe(element);
+        });
+        
+        // Handle rating stars
+        const ratingStars = document.querySelectorAll('.rating-star');
+        
+        ratingStars.forEach(star => {
+            star.addEventListener('click', function() {
+                const rating = this.dataset.rating;
+                const suggestionId = this.parentElement.dataset.suggestionId;
+                const stars = this.parentElement.querySelectorAll('.rating-star');
+                
+                // Update UI
+                stars.forEach(s => {
+                    if (s.dataset.rating <= rating) {
+                        s.style.color = '#ffc107'; // Bootstrap warning color (yellow)
+                    } else {
+                        s.style.color = '#e0e0e0';
+                    }
                 });
                 
-                // Hover effects
-                star.addEventListener('mouseover', function() {
-                    const rating = this.dataset.rating;
-                    const stars = this.parentElement.querySelectorAll('.rating-star');
+                // Send rating to server
+                fetch('{{ url_for("rate_suggestion") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        suggestion_id: suggestionId,
+                        rating: rating
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Show success message
+                    const thankYou = document.createElement('div');
+                    thankYou.className = 'text-success mt-2 small fade-in animated';
+                    thankYou.innerHTML = '<i class="bi bi-check-circle me-1"></i>Thank you for your feedback!';
+                    this.parentElement.appendChild(thankYou);
+                    
+                    // Disable further rating
+                    stars.forEach(s => s.style.pointerEvents = 'none');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Show error message
+                    const errorMsg = document.createElement('div');
+                    errorMsg.className = 'text-danger mt-2 small';
+                    errorMsg.innerHTML = '<i class="bi bi-exclamation-circle me-1"></i>Error saving rating. Please try again.';
+                    this.parentElement.appendChild(errorMsg);
+                });
+            });
+            
+            // Hover effects
+            star.addEventListener('mouseover', function() {
+                const rating = this.dataset.rating;
+                const stars = this.parentElement.querySelectorAll('.rating-star');
+                
+                stars.forEach(s => {
+                    if (s.dataset.rating <= rating) {
+                        s.style.color = '#ffc107';
+                    }
+                });
+            });
+            
+            star.addEventListener('mouseout', function() {
+                const stars = this.parentElement.querySelectorAll('.rating-star');
+                
+                stars.forEach(s => {
+                    if (!s.classList.contains('text-warning')) {
+                        s.style.color = '#e0e0e0';
+                    }
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}
+                    <!-- const stars = this.parentElement.querySelectorAll('.rating-star');
                     
                     stars.forEach(s => {
                         if (s.dataset.rating <= rating) {
@@ -337,6 +415,4 @@
             });
         });
     </script>
-    {% endblock %}
-</body>
-</html>
+    {% endblock %} -->
