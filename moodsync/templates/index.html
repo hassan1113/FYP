@@ -3,21 +3,26 @@
 {% block title %}MoodSync - Track Your Emotional Wellbeing{% endblock %}
 
 {% block content %}
+
 <!-- Animated Background -->
 <div class="animated-background">
   <div class="shape shape-1"></div>
   <div class="shape shape-2"></div>
   <div class="shape shape-3"></div>
   <div class="shape shape-4"></div>
+
+  <!-- Extra Particles -->
+  <div class="particles-container" id="particles"></div>
 </div>
 
 <!-- Hero Section -->
-<section class="hero-section py-5">
+<section class="hero-section py-2">
   <div class="container">
     <div class="row align-items-center">
       <div class="col-lg-6">
         <h1 class="display-4 fw-bold mb-4 text-gradient">Track Your Emotional Journey</h1>
-        <p class="lead mb-4">MoodSync helps you understand your emotional patterns and improve your mental wellbeing through AI-powered mood tracking and personalized insights.</p>
+        <p class="lead mb-4">MoodSync helps you understand your emotional patterns and improve your mental wellbeing
+          through AI-powered mood tracking and personalized insights.</p>
         <div class="d-grid gap-3 d-md-flex justify-content-md-start mb-4">
           <a href="{{ url_for('mood_logger') }}" class="btn btn-primary btn-lg px-4 me-md-2">
             <i class="bi bi-emoji-smile me-2"></i>Log Your Mood
@@ -36,192 +41,130 @@
           </div>
         </div>
       </div>
-      <div class="col-lg-6 mt-5 mt-lg-0 text-center">
-        <img src="{{ url_for('static', filename='images/hero-image.svg') }}" alt="MoodSync dashboard visualization showing emotional tracking interface" class="img-fluid rounded shadow-lg hero-image">
+      <div class="col-lg-6 d-flex justify-content-center align-items-start">
+        <div id="hero-animation" style="width:100%;"></div>
       </div>
+
     </div>
   </div>
 </section>
 
 <!-- How It Works Section -->
-<section class="section-how-it-works py-5 py-md-7">
+<section id="features" class="section-how-it-works pb-5">
   <div class="container">
     <div class="row">
       <div class="col-12 text-center mb-5">
-        <h2 class="display-6 section-title">How It Works</h2>
-        <p class="text-muted">Three simple steps to better emotional awareness</p>
+        <h1 class="display-5 fw-bold section-title">How It Works</h1>
+        <p class="text-muted fs-5">Three simple steps to better emotional awareness</p>
       </div>
     </div>
-    <div class="row process-steps g-4">
+    <div class="row g-4">
+
+      <!-- Step 1 -->
       <div class="col-md-4">
-        <div class="step-card h-100" data-step="1">
-          <div class="step-number">01</div>
-          <div class="feature-icon bg-primary-gradient text-white rounded-circle mb-3">
-            <i class="bi bi-camera" aria-hidden="true"></i>
-          </div>
-          <h3>Capture Your Mood</h3>
-          <p class="text-muted">Use your webcam to automatically detect your current emotional state or manually log how you're feeling.</p>
+        <div class="step-card text-center p-4 h-100 shadow-lg rounded-4">
+          <!-- <div class="icon-wrapper mx-auto mb-3">
+            <i class="bi bi-camera"></i>
+          </div> -->
+          <h3 class="fw-semibold mb-3">Capture Your Mood</h3>
+          <p class="text-muted">Use your webcam to automatically detect your current emotional state or manually log how
+            you're feeling.</p>
         </div>
       </div>
+
+      <!-- Step 2 -->
       <div class="col-md-4">
-        <div class="step-card h-100" data-step="2">
-          <div class="step-number">02</div>
-          <div class="feature-icon bg-primary-gradient text-white rounded-circle mb-3">
-            <i class="bi bi-graph-up" aria-hidden="true"></i>
-          </div>
-          <h3>Track Patterns</h3>
-          <p class="text-muted">Visualize your emotional trends over time and identify patterns related to activities, time, and context.</p>
+        <div class="step-card text-center p-4 h-100 shadow-lg rounded-4">
+          <!-- <div class="icon-wrapper mx-auto mb-3">
+            <i class="bi bi-graph-up"></i>
+          </div> -->
+          <h3 class="fw-semibold mb-3">Track Patterns</h3>
+          <p class="text-muted">Visualize your emotional trends over time and identify patterns related to activities,
+            time, and context.</p>
         </div>
       </div>
+
+      <!-- Step 3 -->
       <div class="col-md-4">
-        <div class="step-card h-100" data-step="3">
-          <div class="step-number">03</div>
-          <div class="feature-icon bg-primary-gradient text-white rounded-circle mb-3">
-            <i class="bi bi-lightbulb" aria-hidden="true"></i>
-          </div>
-          <h3>Get Suggestions</h3>
-          <p class="text-muted">Receive personalized recommendations based on your mood to improve your emotional well-being.</p>
+        <div class="step-card text-center p-4 h-100 shadow-lg rounded-4">
+          <!-- <div class="icon-wrapper mx-auto mb-3">
+            <i class="bi bi-lightbulb"></i>
+          </div> -->
+          <h3 class="fw-semibold mb-3">Get Suggestions</h3>
+          <p class="text-muted">Receive personalized recommendations based on your mood to improve your emotional
+            well-being.</p>
         </div>
       </div>
+
     </div>
   </div>
 </section>
+
 
 <!-- Why Use MoodSync Section -->
 <section class="section-features py-5 py-md-7 bg-light">
   <div class="container">
     <div class="row">
-      <div class="col-lg-6 mb-5 mb-lg-0">
+      <div class="col-12">
         <h2 class="display-6 mb-4 section-title">Why Use MoodSync?</h2>
-        <div class="features-list">
-          <div class="feature-item">
-            <div class="feature-icon-sm">
-              <i class="bi bi-robot text-primary" aria-hidden="true"></i>
-            </div>
-            <div class="feature-content">
-              <h5>AI-Powered Emotion Detection</h5>
-              <p>Accurately identifies your emotional state using advanced facial recognition</p>
-            </div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon-sm">
-              <i class="bi bi-person-check text-primary" aria-hidden="true"></i>
-            </div>
-            <div class="feature-content">
-              <h5>Personalized Suggestions</h5>
-              <p>Get tailored recommendations based on your mood patterns and preferences</p>
-            </div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon-sm">
-              <i class="bi bi-bar-chart-line text-primary" aria-hidden="true"></i>
-            </div>
-            <div class="feature-content">
-              <h5>Mood Analytics</h5>
-              <p>Understand your emotional patterns over time with beautiful visualizations</p>
-            </div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon-sm">
-              <i class="bi bi-shield-lock text-primary" aria-hidden="true"></i>
-            </div>
-            <div class="feature-content">
-              <h5>Privacy-Focused</h5>
-              <p>Your data stays on your device - we never share your personal information</p>
+        <div class="row g-3 g-lg-4">
+          <div class="col-lg-6">
+            <div class="features-list">
+              <div class="feature-item">
+                <div class="feature-icon-lg">
+                  <i class="bi bi-robot text-primary" aria-hidden="true"></i>
+                </div>
+                <div class="feature-content">
+                  <h5>AI-Powered Emotion Detection</h5>
+                  <p>Accurately identifies your emotional state using advanced facial recognition</p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-icon-lg">
+                  <i class="bi bi-person-check text-primary" aria-hidden="true" width="100px" height="100px"></i>
+                </div>
+                <div class="feature-content">
+                  <h5>Personalized Suggestions</h5>
+                  <p>Get tailored recommendations based on your mood patterns and preferences</p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-icon-lg">
+                  <i class="bi bi-bar-chart-line text-primary" aria-hidden="true"></i>
+                </div>
+                <div class="feature-content">
+                  <h5>Mood Analytics</h5>
+                  <p>Understand your emotional patterns over time with beautiful visualizations</p>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="feature-item">
-            <div class="feature-icon-sm">
-              <i class="bi bi-ui-checks text-primary" aria-hidden="true"></i>
-            </div>
-            <div class="feature-content">
-              <h5>Easy to Use</h5>
-              <p>Simple, intuitive interface for daily mood tracking with minimal effort</p>
+          <div class="col-lg-6">
+            <div class="features-list">
+              <div class="feature-item">
+                <div class="feature-icon-sm">
+                  <i class="bi bi-shield-lock text-primary" aria-hidden="true"></i>
+                </div>
+                <div class="feature-content">
+                  <h5>Privacy-Focused</h5>
+                  <p>Your data stays on your device - we never share your personal information</p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-icon-sm">
+                  <i class="bi bi-ui-checks text-primary" aria-hidden="true"></i>
+                </div>
+                <div class="feature-content">
+                  <h5>Easy to Use</h5>
+                  <p>Simple, intuitive interface for daily mood tracking with minimal effort</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
         <a href="{{ url_for('mood_logger') }}" class="btn btn-primary mt-4">
           <i class="bi bi-emoji-smile me-2" aria-hidden="true"></i>Try It Now
         </a>
-      </div>
-      <div class="col-lg-6">
-        <div class="testimonial-carousel">
-          <div class="testimonial-header text-center mb-4">
-            <h3 class="section-title">What Our Users Say</h3>
-            <p class="text-muted">Real feedback from our community</p>
-          </div>
-          <div class="testimonial-container">
-            <div class="testimonial active">
-              <blockquote class="testimonial-content">
-                <div class="d-flex align-items-center mb-4">
-                  <div class="avatar bg-primary text-white rounded-circle me-3">JD</div>
-                  <div>
-                    <h6 class="mb-0">Jane Doe</h6>
-                    <div class="text-warning small">
-                      <i class="bi bi-star-fill" aria-hidden="true"></i>
-                      <i class="bi bi-star-fill" aria-hidden="true"></i>
-                      <i class="bi bi-star-fill" aria-hidden="true"></i>
-                      <i class="bi bi-star-fill" aria-hidden="true"></i>
-                      <i class="bi bi-star-fill" aria-hidden="true"></i>
-                    </div>
-                  </div>
-                </div>
-                <p class="mb-0">"MoodSync has helped me understand my emotional patterns and take proactive steps to improve my mental well-being. The insights are incredibly accurate!"</p>
-              </blockquote>
-            </div>
-            
-            <div class="testimonial">
-              <blockquote class="testimonial-content">
-                <div class="d-flex align-items-center mb-4">
-                  <div class="avatar bg-primary text-white rounded-circle me-3">JS</div>
-                  <div>
-                    <h6 class="mb-0">John Smith</h6>
-                    <div class="text-warning small">
-                      <i class="bi bi-star-fill" aria-hidden="true"></i>
-                      <i class="bi bi-star-fill" aria-hidden="true"></i>
-                      <i class="bi bi-star-fill" aria-hidden="true"></i>
-                      <i class="bi bi-star-fill" aria-hidden="true"></i>
-                      <i class="bi bi-star-half" aria-hidden="true"></i>
-                    </div>
-                  </div>
-                </div>
-                <p class="mb-0">"The emotion detection is surprisingly accurate, and the suggestions are actually helpful. Great tool for daily emotional check-ins."</p>
-              </blockquote>
-            </div>
-            
-            <div class="testimonial">
-              <blockquote class="testimonial-content">
-                <div class="d-flex align-items-center mb-4">
-                  <div class="avatar bg-primary text-white rounded-circle me-3">AM</div>
-                  <div>
-                    <h6 class="mb-0">Alex Morgan</h6>
-                    <div class="text-warning small">
-                      <i class="bi bi-star-fill" aria-hidden="true"></i>
-                      <i class="bi bi-star-fill" aria-hidden="true"></i>
-                      <i class="bi bi-star-fill" aria-hidden="true"></i>
-                      <i class="bi bi-star-fill" aria-hidden="true"></i>
-                      <i class="bi bi-star-fill" aria-hidden="true"></i>
-                    </div>
-                  </div>
-                </div>
-                <p class="mb-0">"I've tried many mood tracking apps, but MoodSync's AI features and beautiful interface make it stand out from the crowd."</p>
-              </blockquote>
-            </div>
-          </div>
-          <div class="testimonial-controls">
-            <button class="testimonial-prev" aria-label="Previous testimonial">
-              <i class="bi bi-chevron-left" aria-hidden="true"></i>
-            </button>
-            <div class="testimonial-dots">
-              <span class="dot active" data-index="0" aria-label="Testimonial 1"></span>
-              <span class="dot" data-index="1" aria-label="Testimonial 2"></span>
-              <span class="dot" data-index="2" aria-label="Testimonial 3"></span>
-            </div>
-            <button class="testimonial-next" aria-label="Next testimonial">
-              <i class="bi bi-chevron-right" aria-hidden="true"></i>
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -282,14 +225,14 @@
     z-index: -1;
     overflow: hidden;
   }
-  
+
   .animated-background .shape {
     position: absolute;
     border-radius: 50%;
     opacity: 0.1;
     animation: float 20s infinite ease-in-out;
   }
-  
+
   .shape-1 {
     width: 300px;
     height: 300px;
@@ -298,7 +241,7 @@
     left: -150px;
     animation-delay: 0s;
   }
-  
+
   .shape-2 {
     width: 200px;
     height: 200px;
@@ -307,7 +250,7 @@
     right: 10%;
     animation-delay: -5s;
   }
-  
+
   .shape-3 {
     width: 150px;
     height: 150px;
@@ -316,7 +259,7 @@
     right: -75px;
     animation-delay: -10s;
   }
-  
+
   .shape-4 {
     width: 100px;
     height: 100px;
@@ -325,18 +268,75 @@
     left: 5%;
     animation-delay: -7s;
   }
-  
+
+  /* Particles */
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, var(--primary) 0%, transparent 70%);
+    opacity: 0.3;
+    animation: floatParticle 8s infinite ease-in-out;
+  }
+
+  @keyframes floatParticle {
+    0% {
+      transform: translateY(0) translateX(0) scale(1);
+    }
+
+    50% {
+      transform: translateY(-30px) translateX(20px) scale(1.1);
+    }
+
+    100% {
+      transform: translateY(0) translateX(0) scale(1);
+    }
+  }
+
+
+  .step-card {
+    background: #fff;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .step-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  .icon-wrapper {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 56px;
+    color: #fff;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .icon-wrapper i {
+    font-size: 56px;
+    line-height: 1;
+  }
+
+  .step-card:hover .icon-wrapper {
+    transform: rotate(8deg) scale(1.05);
+  }
+
   /* Hero Section */
   .hero-section {
     padding: 4rem 0;
     position: relative;
   }
-  
+
   .hero-image {
     max-height: 400px;
     transition: var(--transition);
   }
-  
+
   .text-gradient {
     background: var(--primary-gradient);
     -webkit-background-clip: text;
@@ -344,16 +344,16 @@
     background-clip: text;
     text-fill-color: transparent;
   }
-  
+
   .privacy-badge {
     transition: var(--transition);
   }
-  
+
   .privacy-badge:hover {
     transform: translateY(-5px);
     box-shadow: var(--shadow);
   }
-  
+
   /* Section Titles */
   .section-title {
     position: relative;
@@ -361,7 +361,7 @@
     padding-bottom: 15px;
     margin-bottom: 1rem;
   }
-  
+
   .section-title::after {
     content: '';
     position: absolute;
@@ -372,22 +372,27 @@
     background: var(--primary-gradient);
     border-radius: 3px;
   }
-  
+
   .text-center .section-title::after {
     left: 50%;
     transform: translateX(-50%);
   }
-  
+
   /* How It Works Section */
   .section-how-it-works {
     position: relative;
     overflow: hidden;
   }
-  
+
+  /* Remove icons from How It Works */
+  .section-how-it-works .icon-wrapper {
+    display: none !important;
+  }
+
   .process-steps {
     position: relative;
   }
-  
+
   .process-steps::before {
     content: '';
     position: absolute;
@@ -399,7 +404,7 @@
     opacity: 0.2;
     z-index: 0;
   }
-  
+
   .step-card {
     position: relative;
     text-align: center;
@@ -410,12 +415,12 @@
     transition: var(--transition);
     z-index: 1;
   }
-  
+
   .step-card:hover {
     transform: translateY(-10px);
     box-shadow: var(--shadow-lg);
   }
-  
+
   .step-number {
     position: absolute;
     top: -20px;
@@ -432,22 +437,22 @@
     font-weight: bold;
     font-size: 1.2rem;
   }
-  
+
   .bg-primary-gradient {
     background: var(--primary-gradient) !important;
   }
-  
+
   /* Features Section */
   .section-features {
     position: relative;
   }
-  
+
   .features-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
-  
+
   .feature-item {
     display: flex;
     align-items: flex-start;
@@ -457,25 +462,30 @@
     box-shadow: var(--shadow-sm);
     transition: var(--transition);
   }
-  
+
   .feature-item:hover {
     transform: translateX(10px);
     box-shadow: var(--shadow);
   }
-  
-  .feature-icon-sm {
-    width: 50px;
-    height: 50px;
+
+  .feature-icon-lg {
+    width: 120px !important;
+    height: 120px !important;
     border-radius: 50%;
     background: rgba(111, 66, 193, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
+    font-size: 3rem;
     margin-right: 1rem;
     flex-shrink: 0;
   }
-  
+
+  .feature-icon-lg i {
+    font-size: 56px;
+    line-height: 1;
+  }
+
   /* Testimonial Carousel */
   .testimonial-carousel {
     position: relative;
@@ -484,13 +494,13 @@
     padding: 2rem;
     box-shadow: var(--shadow);
   }
-  
+
   .testimonial-container {
     position: relative;
     min-height: 200px;
     overflow: hidden;
   }
-  
+
   .testimonial {
     position: absolute;
     top: 0;
@@ -500,19 +510,19 @@
     visibility: hidden;
     transition: opacity 0.4s ease, visibility 0.4s ease;
   }
-  
+
   .testimonial.active {
     position: relative;
     opacity: 1;
     visibility: visible;
   }
-  
+
   .testimonial-content {
     padding: 1.5rem;
     background: var(--light);
     border-radius: 10px;
   }
-  
+
   .testimonial-controls {
     display: flex;
     align-items: center;
@@ -520,7 +530,7 @@
     margin-top: 1.5rem;
     gap: 1rem;
   }
-  
+
   .testimonial-prev,
   .testimonial-next {
     width: 40px;
@@ -535,18 +545,18 @@
     transition: var(--transition);
     cursor: pointer;
   }
-  
+
   .testimonial-prev:hover,
   .testimonial-next:hover {
     background: var(--primary);
     color: white;
   }
-  
+
   .testimonial-dots {
     display: flex;
     gap: 0.5rem;
   }
-  
+
   .dot {
     width: 12px;
     height: 12px;
@@ -555,189 +565,206 @@
     cursor: pointer;
     transition: var(--transition);
   }
-  
+
   .dot.active {
     background: var(--primary);
     transform: scale(1.2);
   }
-  
+
   /* CTA Section */
   .section-cta {
     background: var(--primary-gradient);
     color: white;
   }
-  
+
   .section-cta .btn-primary {
     background: rgba(255, 255, 255, 0.2);
     border-color: rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(10px);
   }
-  
+
   .section-cta .btn-outline-primary {
     background: transparent;
     border-color: white;
     color: white;
   }
-  
+
   .section-cta .btn-outline-primary:hover {
     background: white;
     color: var(--primary);
   }
-  
+
   /* Button Styles */
   .btn {
     transition: var(--transition);
     position: relative;
     overflow: hidden;
   }
-  
+
   .btn:hover {
     transform: translateY(-3px);
     box-shadow: var(--shadow);
   }
-  
+
   .btn:active {
     transform: translateY(-1px);
   }
-  
+
   /* Animations */
   @keyframes float {
     0% {
       transform: translateY(0) rotate(0deg);
     }
+
     50% {
       transform: translateY(-15px) rotate(3deg);
     }
+
     100% {
       transform: translateY(0) rotate(0deg);
     }
   }
-  
+
   /* Responsive Adjustments */
   @media (max-width: 992px) {
     .process-steps::before {
       display: none;
     }
-    
+
     .feature-item {
       flex-direction: column;
       align-items: center;
       text-align: center;
     }
-    
+
     .feature-icon-sm {
       margin-right: 0;
       margin-bottom: 1rem;
     }
-    
+
     .py-7 {
       padding-top: 3rem;
       padding-bottom: 3rem;
     }
   }
-  
+
   @media (max-width: 768px) {
     .hero-section {
       text-align: center;
     }
-    
+
     .d-md-flex.justify-content-md-start {
       justify-content: center !important;
     }
-    
+
     .privacy-badge {
       max-width: 400px;
       margin-left: auto;
       margin-right: auto;
     }
-    
+
     .section-title::after {
       left: 50%;
       transform: translateX(-50%);
     }
   }
-  
+
   @media (max-width: 576px) {
     .display-4 {
       font-size: calc(1.375rem + 1.5vw);
     }
-    
+
     .display-5 {
       font-size: calc(1.3rem + 1.5vw);
     }
-    
+
     .display-6 {
       font-size: calc(1.275rem + 0.3vw);
     }
-    
+
     .lead {
       font-size: 1.1rem;
     }
-    
+
     .btn-lg {
       padding: 0.5rem 1rem;
       font-size: 1rem;
+    }
+  }
+
+  /* Responsive enhancements for Why Use MoodSync */
+  @media (min-width: 768px) {
+    .features-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.25rem;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .features-list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.5rem;
     }
   }
 </style>
 
 {% block extra_js %}
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     // Testimonial carousel functionality
     const testimonials = document.querySelectorAll('.testimonial');
     const dots = document.querySelectorAll('.dot');
     const prevBtn = document.querySelector('.testimonial-prev');
     const nextBtn = document.querySelector('.testimonial-next');
     let currentTestimonial = 0;
-    
+
     function showTestimonial(index) {
       testimonials.forEach(testimonial => testimonial.classList.remove('active'));
       dots.forEach(dot => dot.classList.remove('active'));
-      
+
       testimonials[index].classList.add('active');
       dots[index].classList.add('active');
       currentTestimonial = index;
     }
-    
+
     // Next testimonial
     nextBtn.addEventListener('click', () => {
       let nextIndex = (currentTestimonial + 1) % testimonials.length;
       showTestimonial(nextIndex);
     });
-    
+
     // Previous testimonial
     prevBtn.addEventListener('click', () => {
       let prevIndex = (currentTestimonial - 1 + testimonials.length) % testimonials.length;
       showTestimonial(prevIndex);
     });
-    
+
     // Dot navigation
     dots.forEach((dot, index) => {
       dot.addEventListener('click', () => {
         showTestimonial(index);
       });
     });
-    
+
     // Auto-rotate testimonials
     let testimonialInterval = setInterval(() => {
       let nextIndex = (currentTestimonial + 1) % testimonials.length;
       showTestimonial(nextIndex);
     }, 5000);
-    
+
     // Pause auto-rotation when interacting with controls
     const testimonialControls = document.querySelector('.testimonial-controls');
     testimonialControls.addEventListener('mouseenter', () => {
       clearInterval(testimonialInterval);
     });
-    
+
     testimonialControls.addEventListener('mouseleave', () => {
       testimonialInterval = setInterval(() => {
         let nextIndex = (currentTestimonial + 1) % testimonials.length;
         showTestimonial(nextIndex);
       }, 5000);
     });
-    
+
     // Accessibility improvements - keyboard navigation
     prevBtn.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
@@ -746,7 +773,7 @@
         showTestimonial(prevIndex);
       }
     });
-    
+
     nextBtn.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
@@ -754,7 +781,7 @@
         showTestimonial(nextIndex);
       }
     });
-    
+
     dots.forEach((dot, index) => {
       dot.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -762,11 +789,11 @@
           showTestimonial(index);
         }
       });
-      
+
       // Make dots focusable
       dot.setAttribute('tabindex', '0');
     });
-    
+
     // Initialize AOS
     if (typeof AOS !== 'undefined') {
       AOS.init({
@@ -775,15 +802,15 @@
         once: true
       });
     }
-    
+
     // Smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
         e.preventDefault();
-        
+
         const targetId = this.getAttribute('href');
         if (targetId === '#') return;
-        
+
         const targetElement = document.querySelector(targetId);
         if (targetElement) {
           window.scrollTo({
@@ -794,5 +821,35 @@
       });
     });
   });
+
+  // Generate animated particles
+  const particlesContainer = document.getElementById('particles');
+  if (particlesContainer) {
+    for (let i = 0; i < 20; i++) {
+      const particle = document.createElement('div');
+      particle.classList.add('particle');
+
+      const size = Math.random() * 12 + 5;
+      particle.style.width = `${size}px`;
+      particle.style.height = `${size}px`;
+
+      particle.style.left = `${Math.random() * 100}%`;
+      particle.style.top = `${Math.random() * 100}%`;
+
+      particle.style.animationDelay = `${Math.random() * 6}s`;
+
+      particlesContainer.appendChild(particle);
+    }
+  }
+
+  lottie.loadAnimation({
+    container: document.getElementById('hero-animation'), // div ka id
+    renderer: 'svg',
+    loop: true,
+    autoplay: true,
+    path: "{{ url_for('static', filename='images/Moodshuman.json') }}" // Flask static se serve karega
+  });
+
+
 </script>
 {% endblock %}

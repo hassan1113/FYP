@@ -4,78 +4,7 @@
 
 {% block extra_css %}
 <style>
-    :root {
-        --primary: #6c63ff;
-        --secondary: #4dccc6;
-        --accent: #ff6b6b;
-        --dark: #2c2c54;
-        --light: #f7f7f7;
-        --happy: #1cc88a;
-        --sad: #4e73df;
-        --angry: #e74a3b;
-        --surprise: #36b9cc;
-        --fear: #f6c23e;
-        --disgust: #9c27b0;
-        --neutral: #858796;
-        --gradient-start: #6c63ff;
-        --gradient-end: #4dccc6;
-    }
-
-    body {
-        font-family: 'Poppins', sans-serif;
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        min-height: 100vh;
-        color: var(--dark);
-        overflow-x: hidden;
-    }
-
-    .navbar {
-        background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(10px);
-        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-        padding: 15px 0;
-        transition: all 0.3s ease;
-    }
-
-    .navbar-brand {
-        font-weight: 700;
-        color: var(--primary);
-        font-size: 1.8rem;
-        display: flex;
-        align-items: center;
-    }
-
-    .navbar-brand i {
-        margin-right: 10px;
-        animation: pulse 2s infinite;
-    }
-
-    .nav-link {
-        font-weight: 500;
-        margin: 0 10px;
-        position: relative;
-        color: var(--dark);
-        transition: all 0.3s ease;
-    }
-
-    .nav-link:after {
-        content: '';
-        position: absolute;
-        width: 0;
-        height: 2px;
-        bottom: 0;
-        left: 0;
-        background: linear-gradient(to right, var(--primary), var(--secondary));
-        transition: width 0.3s ease;
-    }
-
-    .nav-link:hover {
-        color: var(--primary);
-    }
-
-    .nav-link:hover:after {
-        width: 100%;
-    }
+    /* Dashboard-specific styles only */
 
     .dashboard-header {
         padding: 40px 0 20px;
@@ -565,32 +494,30 @@
         <div class="col-md-3 col-sm-6">
             <div class="stat-card fade-in shadow-sm rounded p-3 h-100">
                 <i class="bi bi-emoji-smile feature-icon" style="font-size: 1.5rem;"></i>
-                <div class="stat-number" id="stat1">{{ mood_stats.total_entries if mood_stats and
-                    mood_stats.total_entries else 0 }}</div>
+                <div class="stat-number" id="stat1">{{ (card_stats.total_entries if card_stats else 0) }}</div>
                 <p class="mb-0">Moods This Month</p>
             </div>
         </div>
         <div class="col-md-3 col-sm-6">
             <div class="stat-card fade-in shadow-sm rounded p-3 h-100" style="animation-delay: 0.2s;">
                 <i class="bi bi-graph-up feature-icon" style="font-size: 1.5rem;"></i>
-                <div class="stat-number" id="stat2">{{ "%.1f"|format(mood_stats.average_intensity) if mood_stats and
-                    mood_stats.average_intensity else "0.0" }}</div>
+                <div class="stat-number" id="stat2">{{ (card_stats.average_intensity if card_stats else 0.0)|round(1) }}
+                </div>
                 <p class="mb-0">Average Intensity</p>
             </div>
         </div>
         <div class="col-md-3 col-sm-6">
             <div class="stat-card fade-in shadow-sm rounded p-3 h-100" style="animation-delay: 0.4s;">
                 <i class="bi bi-emoji-heart-eyes feature-icon" style="font-size: 1.5rem;"></i>
-                <div class="stat-number" id="stat3">{{ mood_stats.dominant_emotion if mood_stats and
-                    mood_stats.dominant_emotion else "None" }}</div>
+                <div class="stat-number" id="stat3">{{ (card_stats.dominant_emotion if card_stats else None) or 'None'
+                    }}</div>
                 <p class="mb-0">Dominant Mood</p>
             </div>
         </div>
         <div class="col-md-3 col-sm-6">
             <div class="stat-card fade-in shadow-sm rounded p-3 h-100" style="animation-delay: 0.6s;">
                 <i class="bi bi-award feature-icon" style="font-size: 1.5rem;"></i>
-                <div class="stat-number" id="stat4">{{ mood_stats.streak if mood_stats and mood_stats.streak else 0
-                    }}</div>
+                <div class="stat-number" id="stat4">{{ (card_stats.streak if card_stats else 0) }}</div>
                 <p class="mb-0">Day Streak</p>
             </div>
         </div>
@@ -623,7 +550,7 @@
                     <h5 class="mb-0">Emotion Distribution</h5>
                 </div>
                 <div class="card-body">
-                    <div class="chart-container" style="position: relative; height:250px;">
+                    <div class="chart-container" style="position: relative;">
                         <canvas id="emotionPieChart"></canvas>
                     </div>
                 </div>
@@ -637,21 +564,31 @@
             <div class="card shadow-sm slide-up" style="animation-delay: 0.1s;">
                 <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
                     <h5 class="mb-2 mb-md-0">Recent Mood Entries</h5>
-                    <div class="dropdown">
-                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
-                            id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-filter"></i> Filter
+                    <div class="d-flex gap-2 align-items-center">
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                                id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-filter"></i> Filter
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                                <li><a class="dropdown-item" href="#">All Emotions</a></li>
+                                <li><a class="dropdown-item" href="#">Happy</a></li>
+                                <li><a class="dropdown-item" href="#">Sad</a></li>
+                                <li><a class="dropdown-item" href="#">Angry</a></li>
+                                <li><a class="dropdown-item" href="#">Surprise</a></li>
+                                <li><a class="dropdown-item" href="#">Fear</a></li>
+                                <li><a class="dropdown-item" href="#">Disgust</a></li>
+                                <li><a class="dropdown-item" href="#">Neutral</a></li>
+                            </ul>
+                        </div>
+                        <select class="form-select form-select-sm" id="reportTimeframe" style="max-width: 180px;">
+                            <option value="week">Weekly Report</option>
+                            <option value="month">Monthly Report</option>
+                            <option value="year">Yearly Report</option>
+                        </select>
+                        <button id="downloadReport" class="btn btn-sm btn-primary">
+                            <i class="bi bi-download me-1"></i>Download Report
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                            <li><a class="dropdown-item" href="#">All Emotions</a></li>
-                            <li><a class="dropdown-item" href="#">Happy</a></li>
-                            <li><a class="dropdown-item" href="#">Sad</a></li>
-                            <li><a class="dropdown-item" href="#">Angry</a></li>
-                            <li><a class="dropdown-item" href="#">Surprise</a></li>
-                            <li><a class="dropdown-item" href="#">Fear</a></li>
-                            <li><a class="dropdown-item" href="#">Disgust</a></li>
-                            <li><a class="dropdown-item" href="#">Neutral</a></li>
-                        </ul>
                     </div>
                 </div>
                 <div class="card-body">
@@ -675,7 +612,8 @@
                                         <span class="badge bg-{{ entry.detected_emotion.lower() }}">{{
                                             entry.detected_emotion }}</span>
                                     </td>
-                                    <td class="d-none d-md-table-cell">{% if entry.confidence_score is not none %}{{ "%.2f"|format(entry.confidence_score * 100) }}%{% else %}N/A{% endif %}</td>
+                                    <td class="d-none d-md-table-cell">{% if entry.confidence_score is not none %}{{
+                                        "%.2f"|format(entry.confidence_score * 100) }}%{% else %}N/A{% endif %}</td>
                                     <td class="d-none d-md-table-cell">{{ entry.context or 'N/A' }}</td>
                                     <td class="d-none d-lg-table-cell">{{ entry.notes or 'N/A' }}</td>
                                 </tr>
@@ -865,7 +803,7 @@
     emotionCounts.push({
         detected_emotion: '{{ item.detected_emotion }}',
         count: {{ item.count }}
-            });
+        });
     {% endfor %}
     moodData.week.emotion_counts = emotionCounts;
     moodData.month.emotion_counts = emotionCounts;
@@ -1064,15 +1002,17 @@
 
     // Interactive navbar
     const navbar = document.querySelector('.navbar');
-    window.addEventListener('scroll', function () {
-        if (window.scrollY > 50) {
-            navbar.style.padding = '10px 0';
-            navbar.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
-        } else {
-            navbar.style.padding = '15px 0';
-            navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
-        }
-    });
+    if (navbar) {
+        window.addEventListener('scroll', function () {
+            if (window.scrollY > 50) {
+                navbar.style.padding = '10px 0';
+                navbar.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
+            } else {
+                navbar.style.padding = '15px 0';
+                navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
+            }
+        });
+    }
 
     // Initialize animations
     document.querySelectorAll('.fade-in, .slide-up').forEach(function (element) {
@@ -1080,6 +1020,211 @@
             element.classList.add('animated');
         }, 100);
     });
-});
+    });
+</script>
+<script>
+    // Simple filter hookup for current dropdown markup
+    document.addEventListener('DOMContentLoaded', function () {
+        const filterBtn = document.getElementById('dropdownMenuButton');
+        const menu = document.querySelector('[aria-labelledby="dropdownMenuButton"]');
+        if (!menu) return;
+        menu.querySelectorAll('a.dropdown-item').forEach(item => {
+            item.addEventListener('click', function (e) {
+                e.preventDefault();
+                const chosen = (this.textContent || '').trim();
+                if (filterBtn) filterBtn.innerHTML = '<i class="bi bi-filter"></i> ' + (chosen || 'Filter');
+                const target = chosen.toLowerCase();
+                const showAll = chosen === 'All Emotions';
+                document.querySelectorAll('table tbody tr').forEach(tr => {
+                    const badge = tr.querySelector('td span.badge');
+                    if (!badge) { tr.style.display = ''; return; }
+                    const emo = (badge.textContent || '').toLowerCase();
+                    tr.style.display = (showAll || emo === target) ? '' : 'none';
+                });
+            });
+        });
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+    // Download enhanced report using current mood_stats
+    document.addEventListener('DOMContentLoaded', function () {
+        const btn = document.getElementById('downloadReport');
+        if (!btn) return;
+
+        btn.addEventListener('click', function () {
+            const timeframe = document.getElementById('reportTimeframe').value;
+            const jsPDFLib = window.jspdf;
+
+            if (!jsPDFLib || !jsPDFLib.jsPDF) {
+                alert('PDF library not loaded.');
+                return;
+            }
+
+            const doc = new jsPDFLib.jsPDF();
+            const username = '{{ session.get("first_name") or session.get("username", "User") }}';
+            const currentDate = new Date().toLocaleDateString();
+
+            // Header
+            doc.setFontSize(22);
+            doc.setTextColor(111, 66, 193);
+            doc.text('MoodSync Report', 105, 20, { align: 'center' });
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Generated for: ${username}`, 20, 40);
+            doc.text(`Date: ${currentDate}`, 20, 48);
+            doc.text(`Report Type: ${timeframe}`, 20, 56);
+
+            {% if mood_stats %}
+            // Summary
+            doc.setFontSize(16);
+            doc.setTextColor(111, 66, 193);
+            doc.text('Summary', 20, 72);
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Total entries (30d): {{ mood_stats.total_entries or 0 }}`, 20, 82);
+            doc.text(`Active days: {{ mood_stats.daily_averages|length if mood_stats.daily_averages else 0 }}`, 20, 90);
+            doc.text(`Streak (days): {{ mood_stats.streak or 0 }}`, 20, 98);
+            doc.text(`Average intensity: {{ '%.1f'|format(mood_stats.average_intensity) if mood_stats.average_intensity else '0.0' }}`, 20, 106);
+            doc.text(`Dominant emotion: {{ mood_stats.dominant_emotion or 'None' }}`, 20, 114);
+
+            // Emotion distribution with percentages
+            doc.setFontSize(16);
+            doc.setTextColor(111, 66, 193);
+            doc.text('Emotion Distribution', 20, 130);
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+
+            {% if mood_stats.emotion_counts %}
+            (function () {
+                const items = [
+                    {% for item in mood_stats.emotion_counts %}
+                    { label: '{{ item.detected_emotion }}', count: { { item.count } } },
+            {% endfor %}
+                ];
+            const total = items.reduce((a, b) => a + b.count, 0) || 1;
+            let y = 138;
+            items.forEach(it => {
+                const pct = ((it.count / total) * 100).toFixed(1);
+                doc.text(`- ${it.label}: ${it.count} (${pct}%)`, 24, y);
+                y += 8;
+            });
+        })();
+        {% else %}
+        doc.text('No data', 24, 138);
+        {% endif %}
+
+        // Best/Worst day by avg intensity
+        doc.setFontSize(16);
+        doc.setTextColor(111, 66, 193);
+        doc.text('Best and Worst Days (by Avg Intensity)', 20, 170);
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+
+        {% if mood_stats.daily_averages %}
+        (function () {
+            const entries = Object.entries({{ mood_stats.daily_averages | tojson }});
+        if (entries.length) {
+            entries.sort((a, b) => b[1] - a[1]);
+            const best = entries[0];
+            const worst = entries[entries.length - 1];
+            doc.text(`Best: ${best[0]} (avg ${Number(best[1]).toFixed(1)})`, 24, 178);
+            doc.text(`Worst: ${worst[0]} (avg ${Number(worst[1]).toFixed(1)})`, 24, 186);
+        } else {
+            doc.text('No daily data', 24, 178);
+        }
+    })();
+    {% else %}
+    doc.text('No daily data', 24, 178);
+    {% endif %}
+
+    // Recommendations by dominant emotion
+    doc.setFontSize(16);
+    doc.setTextColor(111, 66, 193);
+    doc.text('Recommendations', 20, 202);
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+
+    (function () {
+        const emo = "{{ mood_stats.dominant_emotion or '' }}";
+        const recsMap = {
+            'Happy': [
+                'Share positive moments with a friend or journal them.',
+                'Schedule enjoyable activities to sustain positivity.'
+            ],
+            'Sad': [
+                'Go for a short walk and get some sunlight.',
+                'Reach out to someone you trust and talk it out.'
+            ],
+            'Angry': [
+                'Try 5 minutes of deep breathing or box breathing.',
+                'Channel energy into a quick workout or writing.'
+            ],
+            'Fear': [
+                'List worries and mark actionable next steps.',
+                'Practice grounding (5-4-3-2-1 method).'
+            ],
+            'Disgust': [
+                'Notice triggers and step away briefly to reset.',
+                'Engage in a neutral activity (music, tidy up) to shift state.'
+            ],
+            'Surprise': [
+                'Note what surprised you and what you learned.',
+                'Plan a small routine to regain control if needed.'
+            ],
+            'Neutral': [
+                'Add a small enjoyable task to lift mood.',
+                'Light exercise or stretching for 10 minutes.'
+            ]
+        };
+        const list = recsMap[emo] || ['Log more moods to unlock personalized tips.'];
+        let y = 210;
+        list.forEach(t => {
+            doc.text(`- ${t}`, 24, y);
+            y += 8;
+        });
+    })();
+
+    // Appendix: recent entries
+    doc.setFontSize(16);
+    doc.setTextColor(111, 66, 193);
+    doc.text('Recent Entries', 20, 240);
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+
+    {% if mood_history %}
+    (function () {
+        const rows = [
+            {% for entry in mood_history[: 5] %}
+                    {
+        date: '{{ entry.timestamp }}',
+            emo: '{{ entry.detected_emotion }}',
+                intensity: { { entry.intensity if entry.intensity is not none else 0 } },
+        notes: { { (entry.notes or '') | tojson } }
+    },
+    {% endfor %}
+                ];
+    let y = 248;
+    rows.forEach(r => {
+        const line = `${r.date} - ${r.emo} (intensity ${r.intensity || 'N/A'})`;
+        doc.text(line, 24, y);
+        y += 6;
+    });
+            }) ();
+    {% else %}
+    doc.text('No recent entries found.', 24, 248);
+    {% endif %}
+
+    {% else %}
+    doc.text('No mood stats available yet.', 20, 72);
+    {% endif %}
+
+    // Footer
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    doc.text('Generated by MoodSync', 105, 280, { align: 'center' });
+    doc.save(`MoodSync_Report_${currentDate.replace(/\//g, '-')}.pdf`);
+        });
+    });
 </script>
 {% endblock %}

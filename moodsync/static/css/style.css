@@ -2,7 +2,17 @@
 
 /* Custom Variables */
 :root {
-    --primary-color: #4e73df;
+    /* Brand Colors */
+    --primary: #6c63ff;
+    --secondary: #4dccc6;
+    --accent: #ff6b6b;
+    --dark: #2c2c54;
+    --light: #f7f7f7;
+    --gradient-primary: linear-gradient(135deg, #6c63ff 0%, #4dccc6 100%);
+    --gradient-secondary: linear-gradient(135deg, #4dccc6 0%, #6c63ff 100%);
+    
+    /* Legacy Variables for Compatibility */
+    --primary-color: #6c63ff;
     --secondary-color: #858796;
     --success-color: #1cc88a;
     --info-color: #36b9cc;
@@ -28,8 +38,12 @@
 
 /* General Styles */
 body {
-    font-family: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    background-color: #f8f9fc;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    color: var(--dark);
+    overflow-x: hidden;
+    line-height: 1.6;
     transition: background-color var(--animation-medium) ease;
 }
 

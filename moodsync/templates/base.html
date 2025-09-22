@@ -4,11 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MoodSync - Emotion Detection Mood Tracker</title>
+    <title>{% block title %}MoodSync - Emotion Detection Mood Tracker{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+    <script src="https://unpkg.com/lottie-web@latest/build/player/lottie.min.js"></script>
+
+
+    {% block extra_css %}{% endblock %}
+
     <style>
         :root {
             --primary: #6c63ff;
@@ -20,11 +27,7 @@
             --gradient-end: #4dccc6;
             --navbar-height: 70px;
         }
-    </style>
 
-    {% block extra_css %}{% endblock %}
-
-    <style>
         * {
             margin: 0;
             padding: 0;
@@ -468,41 +471,31 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                {% if session.user_id %}
+                <!-- Authenticated user navigation -->
+                <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == url_for('home') %}active{% endif %}"
-                            href="{{ url_for('home') }}">
-                            <i class="bi bi-house-door me-1"></i> Home
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.path == url_for('dashboard') %}active{% endif %}"
+                        <a class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}"
                             href="{{ url_for('dashboard') }}">
                             <i class="bi bi-speedometer2 me-1"></i> Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == url_for('mood_logger') %}active{% endif %}"
+                        <a class="nav-link {% if request.endpoint == 'mood_logger' %}active{% endif %}"
                             href="{{ url_for('mood_logger') }}">
-                            <i class="bi bi-camera me-1"></i> Mood Logger
+                            <i class="bi bi-camera me-1"></i> Log Mood
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == url_for('analytics') %}active{% endif %}"
+                        <a class="nav-link {% if request.endpoint == 'analytics' %}active{% endif %}"
                             href="{{ url_for('analytics') }}">
                             <i class="bi bi-graph-up me-1"></i> Analytics
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == url_for('suggestions') %}active{% endif %}"
+                        <a class="nav-link {% if request.endpoint == 'suggestions' %}active{% endif %}"
                             href="{{ url_for('suggestions') }}">
                             <i class="bi bi-lightbulb me-1"></i> Suggestions
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.path == url_for('settings') %}active{% endif %}"
-                            href="{{ url_for('settings') }}">
-                            <i class="bi bi-gear me-1"></i> Settings
                         </a>
                     </li>
                 </ul>
@@ -510,11 +503,12 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-person-circle me-1"></i> Account
+                            <i class="bi bi-person-circle me-1"></i> {{ session.first_name or session.username or
+                            'Account' }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" href="{{ url_for('settings') }}"><i
-                                        class="bi bi-gear me-2"></i>Profile Settings</a></li>
+                                        class="bi bi-gear me-2"></i>Settings</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -523,46 +517,49 @@
                         </ul>
                     </li>
                 </ul>
+                {% else %}
+                <!-- Non-authenticated user navigation -->
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'index' %}active{% endif %}"
+                            href="{{ url_for('index') }}">
+                            <i class="bi bi-house-door me-1"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'about' %}active{% endif %}"
+                            href="{{ url_for('about') }}">
+                            <i class="bi bi-info-circle me-1"></i> About
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'login' %}active{% endif %}"
+                            href="{{ url_for('login') }}">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary ms-2 px-3" href="{{ url_for('register') }}">
+                            <i class="bi bi-person-plus me-1"></i> Sign Up
+                        </a>
+                    </li>
+                </ul>
+                {% endif %}
             </div>
         </div>
     </nav>
-
-    {% block content %}
-    <!-- Hero Section -->
-    <section class="hero-section">
-        <div class="hero-bg">
-            <div class="hero-bg-circle circle-1"></div>
-            <div class="hero-bg-circle circle-2"></div>
-            <div class="hero-bg-circle circle-3"></div>
-        </div>
-
-        <div class="particles-container" id="particles"></div>
-
-        <div class="container">
-            <div class="row align-items-center justify-content-center">
-                <div class="col-md-8 text-center slide-up">
-                    <h1 class="display-4 mb-4">Welcome to MoodSync</h1>
-                    <p class="lead mb-4">Track your emotions, understand your patterns, and get personalized suggestions
-                        to improve your well-being.</p>
-                    <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
-                        <a href="{{ url_for('mood_logger') }}" class="btn btn-primary btn-lg px-4 gap-3">
-                            <i class="bi bi-camera me-2"></i>Log Your Mood
-                        </a>
-                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary btn-lg px-4">
-                            <i class="bi bi-speedometer2 me-2"></i>View Dashboard
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- Flash Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
     <div class="container mt-4">
         {% for category, message in messages %}
-        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show"
+            role="alert">
+            <i
+                class="bi bi-{% if category == 'success' %}check-circle{% elif category == 'warning' %}exclamation-triangle{% elif category == 'danger' or category == 'error' %}x-circle{% else %}info-circle{% endif %} me-2"></i>
             {{ message }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
@@ -571,10 +568,26 @@
     {% endif %}
     {% endwith %}
 
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
     <!-- Footer -->
-    <footer class="footer mt-auto py-3">
-        <div class="container text-center">
-            <span>© 2025 MoodSync - Emotion Detection Mood Tracker</span>
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center mb-2 mb-md-0">
+                        <i class="bi bi-emoji-smile-fill text-primary me-2 fs-4"></i>
+                        <span class="fw-bold">MoodSync</span>
+                    </div>
+                    <small class="text-muted">Your emotional wellness companion</small>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <small>© 2025 MoodSync - All rights reserved</small>
+                </div>
+            </div>
         </div>
     </footer>
 
@@ -665,7 +678,7 @@
             window.addEventListener('scroll', checkScroll);
         });
     </script>
-    {% endblock %}
+    {% block extra_js %}{% endblock %}
 </body>
 
 </html>

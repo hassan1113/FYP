@@ -55,7 +55,7 @@ def login_required(f):
 @app.route('/')
 def index():
     if 'user_id' in session:
-        return redirect(url_for('home'))
+        return redirect(url_for('dashboard'))
     return render_template('index.html')
 
 @app.route('/home')
@@ -170,6 +170,8 @@ def login():
         if user and check_password_hash(user['password_hash'], password):
             session['user_id'] = user['id']
             session['username'] = user['username']
+            # store first_name for navbar display
+            session['first_name'] = user.get('first_name') if isinstance(user, dict) else user['first_name'] if 'first_name' in user.keys() else None
             
             # Set session expiry for remember me
             if remember:
@@ -181,7 +183,7 @@ def login():
                 return redirect(next_page)
                 
             flash(f'Welcome back, {username}!', 'success')
-            return redirect(url_for('home'))
+            return redirect(url_for('dashboard'))
         else:
             flash('Invalid username or password', 'danger')
             
@@ -199,15 +201,25 @@ def dashboard():
     # Get user ID from session
     user_id = session.get('user_id')
     
-    # Get recent mood history
+    # Get recent mood history (last week, few items)
     mood_history = db_manager.get_mood_history(user_id=user_id, days=7, limit=5)
     
-    # Get mood statistics
+    # Charts/statistics base window
     mood_stats = db_manager.get_mood_stats(user_id=user_id, days=30)
+    
+    # Card summary - use a wider window so cards are populated even if last 30d are sparse
+    card_window = db_manager.get_mood_stats(user_id=user_id, days=365)
+    card_stats = {
+        'total_entries': card_window.get('total_entries', 0) if isinstance(card_window, dict) else 0,
+        'average_intensity': (card_window.get('average_intensity') or 0.0) if isinstance(card_window, dict) else 0.0,
+        'dominant_emotion': card_window.get('dominant_emotion') if isinstance(card_window, dict) else None,
+        'streak': card_window.get('streak', 0) if isinstance(card_window, dict) else 0,
+    }
     
     return render_template('dashboard.html', 
                            mood_history=mood_history, 
-                           mood_stats=mood_stats)
+                           mood_stats=mood_stats,
+                           card_stats=card_stats)
 
 @app.route('/settings', methods=['GET', 'POST'])
 @login_required
