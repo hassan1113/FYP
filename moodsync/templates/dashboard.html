@@ -1196,14 +1196,14 @@
     (function () {
         const rows = [
             {% for entry in mood_history[: 5] %}
-                    {
+            {
         date: '{{ entry.timestamp }}',
             emo: '{{ entry.detected_emotion }}',
                 intensity: { { entry.intensity if entry.intensity is not none else 0 } },
         notes: { { (entry.notes or '') | tojson } }
     },
     {% endfor %}
-                ];
+        ];
     let y = 248;
     rows.forEach(r => {
         const line = `${r.date} - ${r.emo} (intensity ${r.intensity || 'N/A'})`;

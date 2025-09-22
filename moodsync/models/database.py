@@ -104,32 +104,92 @@ class DatabaseManager:
         with sqlite3.connect(self.db_path) as conn:
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
-            
-            # Get emotion counts
-            cursor.execute('''
+
+            # Base filter for timeframe
+            timeframe_clause = "timestamp >= datetime('now', '-' || ? || ' days')"
+
+            # Emotion counts
+            cursor.execute(
+                f'''
                 SELECT detected_emotion, COUNT(*) as count
                 FROM moods
-                WHERE user_id = ? AND timestamp >= datetime('now', '-' || ? || ' days')
+                WHERE user_id = ? AND {timeframe_clause}
                 GROUP BY detected_emotion
                 ORDER BY count DESC
-            ''', (user_id, days))
-            
+                ''',
+                (user_id, days)
+            )
             emotion_counts = [dict(row) for row in cursor.fetchall()]
-            
-            # Get daily mood averages (using intensity as a proxy for mood score)
-            cursor.execute('''
+
+            # Daily averages of intensity
+            cursor.execute(
+                f'''
                 SELECT date(timestamp) as date, AVG(intensity) as avg_intensity
                 FROM moods
-                WHERE user_id = ? AND timestamp >= datetime('now', '-' || ? || ' days') AND intensity IS NOT NULL
+                WHERE user_id = ? AND {timeframe_clause} AND intensity IS NOT NULL
                 GROUP BY date(timestamp)
                 ORDER BY date
-            ''', (user_id, days))
-            
-            daily_mood = [dict(row) for row in cursor.fetchall()]
-            
+                ''',
+                (user_id, days)
+            )
+            daily_rows = [dict(row) for row in cursor.fetchall()]
+            daily_averages = {row['date']: float(row['avg_intensity']) if row['avg_intensity'] is not None else 0.0 for row in daily_rows}
+
+            # Total entries in window
+            cursor.execute(
+                f"""
+                SELECT COUNT(*) as total
+                FROM moods
+                WHERE user_id = ? AND {timeframe_clause}
+                """,
+                (user_id, days)
+            )
+            total_entries = int(cursor.fetchone()['total'])
+
+            # Average intensity over window
+            cursor.execute(
+                f"""
+                SELECT AVG(intensity) as avg_intensity
+                FROM moods
+                WHERE user_id = ? AND {timeframe_clause} AND intensity IS NOT NULL
+                """,
+                (user_id, days)
+            )
+            avg_row = cursor.fetchone()
+            average_intensity = float(avg_row['avg_intensity']) if avg_row and avg_row['avg_intensity'] is not None else 0.0
+
+            # Dominant emotion by count
+            dominant_emotion = emotion_counts[0]['detected_emotion'] if emotion_counts else None
+
+            # Streak calculation: consecutive days with any entry up to today
+            cursor.execute(
+                """
+                SELECT date(timestamp) as day
+                FROM moods
+                WHERE user_id = ? AND timestamp >= date('now', '-365 day')
+                GROUP BY date(timestamp)
+                ORDER BY day DESC
+                """,
+                (user_id,)
+            )
+            days_with_entries = [row['day'] for row in cursor.fetchall()]
+            days_set = set(days_with_entries)
+
+            # Walk back from today counting consecutive days present in set
+            from datetime import date, timedelta as _timedelta
+            streak = 0
+            current = date.today()
+            while current.strftime('%Y-%m-%d') in days_set:
+                streak += 1
+                current -= _timedelta(days=1)
+
             return {
                 'emotion_counts': emotion_counts,
-                'daily_mood': daily_mood
+                'daily_averages': daily_averages,
+                'total_entries': total_entries,
+                'average_intensity': average_intensity,
+                'dominant_emotion': dominant_emotion,
+                'streak': streak,
             }
     
     def get_suggestion_effectiveness(self, user_id=1):
