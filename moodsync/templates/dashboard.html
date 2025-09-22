@@ -586,6 +586,10 @@
                             <option value="month">Monthly Report</option>
                             <option value="year">Yearly Report</option>
                         </select>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
+                            data-bs-target="#advancedFilterModal">
+                            <i class="bi bi-sliders me-1"></i>Advanced Filters
+                        </button>
                         <button id="downloadReport" class="btn btn-sm btn-primary">
                             <i class="bi bi-download me-1"></i>Download Report
                         </button>
@@ -1022,6 +1026,134 @@
     });
     });
 </script>
+<!-- Advanced Filter Modal -->
+<div class="modal fade" id="advancedFilterModal" tabindex="-1" aria-labelledby="advancedFilterLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="advancedFilterLabel">Advanced Filters</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Emotion</label>
+                        <select id="filterEmotion" class="form-select">
+                            <option value="">All</option>
+                            <option>Happy</option>
+                            <option>Sad</option>
+                            <option>Angry</option>
+                            <option>Surprise</option>
+                            <option>Fear</option>
+                            <option>Disgust</option>
+                            <option>Neutral</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Min Confidence (%)</label>
+                        <input type="number" id="filterMinConf" class="form-control" placeholder="e.g., 50" min="0"
+                            max="100">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Max Confidence (%)</label>
+                        <input type="number" id="filterMaxConf" class="form-control" placeholder="e.g., 100" min="0"
+                            max="100">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">From Date</label>
+                        <input type="date" id="filterFrom" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">To Date</label>
+                        <input type="date" id="filterTo" class="form-control">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Search Notes/Context</label>
+                        <input type="text" id="filterSearch" class="form-control" placeholder="Type to search...">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="applyAdvancedFilters" class="btn btn-primary"><i
+                        class="bi bi-funnel me-1"></i>Apply Filters</button>
+                <button type="button" id="resetAdvancedFilters" class="btn btn-outline-secondary">Reset</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Advanced filter logic
+    document.addEventListener('DOMContentLoaded', function () {
+        const applyBtn = document.getElementById('applyAdvancedFilters');
+        const resetBtn = document.getElementById('resetAdvancedFilters');
+        const tableRows = () => Array.from(document.querySelectorAll('table.table tbody tr'));
+
+        function parseConfidence(text) {
+            if (!text) return null;
+            const m = text.match(/([0-9]+(?:\.[0-9]+)?)%/);
+            return m ? parseFloat(m[1]) : null;
+        }
+
+        function withinDateRange(dateStr, from, to) {
+            if (!dateStr) return true;
+            const d = new Date(dateStr);
+            if (from && d < new Date(from)) return false;
+            if (to && d > new Date(to + 'T23:59:59')) return false;
+            return true;
+        }
+
+        function applyFilters() {
+            const emo = (document.getElementById('filterEmotion').value || '').toLowerCase();
+            const minC = document.getElementById('filterMinConf').value;
+            const maxC = document.getElementById('filterMaxConf').value;
+            const from = document.getElementById('filterFrom').value;
+            const to = document.getElementById('filterTo').value;
+            const q = (document.getElementById('filterSearch').value || '').toLowerCase();
+
+            tableRows().forEach(tr => {
+                const tds = tr.querySelectorAll('td');
+                if (tds.length < 5) { tr.style.display = ''; return; }
+                const dateText = (tds[0].textContent || '').trim();
+                const emoBadge = tr.querySelector('td span.badge');
+                const emoText = (emoBadge ? emoBadge.textContent : '').trim().toLowerCase();
+                const confText = (tds[2].textContent || '').trim();
+                const confVal = parseConfidence(confText);
+                const contextText = (tds[3].textContent || '').toLowerCase();
+                const notesText = (tds[4].textContent || '').toLowerCase();
+
+                let visible = true;
+                if (emo && emoText !== emo) visible = false;
+                if (visible && minC && (confVal === null || confVal < parseFloat(minC))) visible = false;
+                if (visible && maxC && (confVal === null || confVal > parseFloat(maxC))) visible = false;
+                if (visible && !withinDateRange(dateText, from, to)) visible = false;
+                if (visible && q && !(contextText.includes(q) || notesText.includes(q))) visible = false;
+
+                tr.style.display = visible ? '' : 'none';
+            });
+        }
+
+        if (applyBtn) {
+            applyBtn.addEventListener('click', function () {
+                applyFilters();
+                const modalEl = document.getElementById('advancedFilterModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+            });
+        }
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function () {
+                ['filterEmotion', 'filterMinConf', 'filterMaxConf', 'filterFrom', 'filterTo', 'filterSearch'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (!el) return;
+                    if (el.tagName === 'SELECT') el.selectedIndex = 0; else el.value = '';
+                });
+                tableRows().forEach(tr => tr.style.display = '');
+            });
+        }
+    });
+</script>
 <script>
     // Simple filter hookup for current dropdown markup
     document.addEventListener('DOMContentLoaded', function () {
@@ -1053,63 +1185,63 @@
         if (!btn) return;
 
         btn.addEventListener('click', function () {
-            const timeframe = document.getElementById('reportTimeframe').value;
-            const jsPDFLib = window.jspdf;
+            try {
+                const timeframe = document.getElementById('reportTimeframe').value;
+                const jsPDFLib = window.jspdf;
+                if (!jsPDFLib || !jsPDFLib.jsPDF) {
+                    alert('PDF library not loaded.');
+                    return;
+                }
 
-            if (!jsPDFLib || !jsPDFLib.jsPDF) {
-                alert('PDF library not loaded.');
-                return;
-            }
+                const doc = new jsPDFLib.jsPDF();
+                const username = '{{ session.get("first_name") or session.get("username", "User") }}';
+                const currentDate = new Date().toLocaleDateString();
 
-            const doc = new jsPDFLib.jsPDF();
-            const username = '{{ session.get("first_name") or session.get("username", "User") }}';
-            const currentDate = new Date().toLocaleDateString();
+                // Header
+                doc.setFontSize(22);
+                doc.setTextColor(111, 66, 193);
+                doc.text('MoodSync Report', 105, 20, { align: 'center' });
+                doc.setFontSize(12);
+                doc.setTextColor(0, 0, 0);
+                doc.text(`Generated for: ${username}`, 20, 40);
+                doc.text(`Date: ${currentDate}`, 20, 48);
+                doc.text(`Report Type: ${timeframe}`, 20, 56);
 
-            // Header
-            doc.setFontSize(22);
-            doc.setTextColor(111, 66, 193);
-            doc.text('MoodSync Report', 105, 20, { align: 'center' });
-            doc.setFontSize(12);
-            doc.setTextColor(0, 0, 0);
-            doc.text(`Generated for: ${username}`, 20, 40);
-            doc.text(`Date: ${currentDate}`, 20, 48);
-            doc.text(`Report Type: ${timeframe}`, 20, 56);
+                {% if mood_stats %}
+                // Summary
+                doc.setFontSize(16);
+                doc.setTextColor(111, 66, 193);
+                doc.text('Summary', 20, 72);
+                doc.setFontSize(12);
+                doc.setTextColor(0, 0, 0);
+                doc.text(`Total entries (30d): {{ mood_stats.total_entries or 0 }}`, 20, 82);
+                doc.text(`Active days: {{ mood_stats.daily_averages|length if mood_stats.daily_averages else 0 }}`, 20, 90);
+                doc.text(`Streak (days): {{ mood_stats.streak or 0 }}`, 20, 98);
+                doc.text(`Average intensity: {{ '%.1f'|format(mood_stats.average_intensity) if mood_stats.average_intensity else '0.0' }}`, 20, 106);
+                doc.text(`Dominant emotion: {{ mood_stats.dominant_emotion or 'None' }}`, 20, 114);
 
-            {% if mood_stats %}
-            // Summary
-            doc.setFontSize(16);
-            doc.setTextColor(111, 66, 193);
-            doc.text('Summary', 20, 72);
-            doc.setFontSize(12);
-            doc.setTextColor(0, 0, 0);
-            doc.text(`Total entries (30d): {{ mood_stats.total_entries or 0 }}`, 20, 82);
-            doc.text(`Active days: {{ mood_stats.daily_averages|length if mood_stats.daily_averages else 0 }}`, 20, 90);
-            doc.text(`Streak (days): {{ mood_stats.streak or 0 }}`, 20, 98);
-            doc.text(`Average intensity: {{ '%.1f'|format(mood_stats.average_intensity) if mood_stats.average_intensity else '0.0' }}`, 20, 106);
-            doc.text(`Dominant emotion: {{ mood_stats.dominant_emotion or 'None' }}`, 20, 114);
+                // Emotion distribution with percentages
+                doc.setFontSize(16);
+                doc.setTextColor(111, 66, 193);
+                doc.text('Emotion Distribution', 20, 130);
+                doc.setFontSize(12);
+                doc.setTextColor(0, 0, 0);
 
-            // Emotion distribution with percentages
-            doc.setFontSize(16);
-            doc.setTextColor(111, 66, 193);
-            doc.text('Emotion Distribution', 20, 130);
-            doc.setFontSize(12);
-            doc.setTextColor(0, 0, 0);
-
-            {% if mood_stats.emotion_counts %}
-            (function () {
-                const items = [
-                    {% for item in mood_stats.emotion_counts %}
+                {% if mood_stats.emotion_counts %}
+                (function () {
+                    const items = [
+                        {% for item in mood_stats.emotion_counts %}
                     { label: '{{ item.detected_emotion }}', count: { { item.count } } },
-            {% endfor %}
+                {% endfor %}
                 ];
-            const total = items.reduce((a, b) => a + b.count, 0) || 1;
-            let y = 138;
-            items.forEach(it => {
-                const pct = ((it.count / total) * 100).toFixed(1);
-                doc.text(`- ${it.label}: ${it.count} (${pct}%)`, 24, y);
-                y += 8;
-            });
-        })();
+                const total = items.reduce((a, b) => a + b.count, 0) || 1;
+                let y = 138;
+                items.forEach(it => {
+                    const pct = ((it.count / total) * 100).toFixed(1);
+                    doc.text(`- ${it.label}: ${it.count} (${pct}%)`, 24, y);
+                    y += 8;
+                });
+            })();
         {% else %}
         doc.text('No data', 24, 138);
         {% endif %}
@@ -1224,6 +1356,10 @@
     doc.setTextColor(100, 100, 100);
     doc.text('Generated by MoodSync', 105, 280, { align: 'center' });
     doc.save(`MoodSync_Report_${currentDate.replace(/\//g, '-')}.pdf`);
+            } catch (err) {
+        console.error('Report generation failed:', err);
+        alert('Failed to generate report. Please check console.');
+    }
         });
     });
 </script>

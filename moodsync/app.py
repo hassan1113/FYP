@@ -497,6 +497,8 @@ def analytics():
     week_stats = db_manager.get_mood_stats(user_id=user_id, days=7)
     month_stats = db_manager.get_mood_stats(user_id=user_id, days=30)
     year_stats = db_manager.get_mood_stats(user_id=user_id, days=365)
+    # Context averages for current month by default
+    context_stats = db_manager.get_context_avg_intensity(user_id=user_id, days=30)
     
     # Get suggestion effectiveness
     suggestion_stats = db_manager.get_suggestion_effectiveness(user_id=user_id)
@@ -505,6 +507,7 @@ def analytics():
                            week_stats=week_stats,
                            month_stats=month_stats,
                            year_stats=year_stats,
+                           context_stats=context_stats,
                            suggestion_stats=suggestion_stats)
 
 @app.route('/mood_logger')
@@ -548,6 +551,7 @@ def save_mood():
     intensity = data.get('intensity', 5)
     notes = data.get('notes', '')
     image_data = data.get('image')
+    context = data.get('context')
     
     # Validate required fields
     if not emotion:
@@ -576,9 +580,9 @@ def save_mood():
         
         # Insert mood entry
         cursor.execute('''
-            INSERT INTO moods (user_id, detected_emotion, confidence_score, intensity, notes, image_path, timestamp)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        ''', (user_id, emotion, confidence_score, intensity, notes, image_path, datetime.now()))
+            INSERT INTO moods (user_id, detected_emotion, confidence_score, intensity, notes, context, image_path, timestamp)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (user_id, emotion, confidence_score, intensity, notes, context, image_path, datetime.now()))
         
         # Commit changes and close connection
         conn.commit()

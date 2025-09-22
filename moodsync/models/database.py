@@ -207,6 +207,22 @@ class DatabaseManager:
             ''', (user_id,))
             
             return [dict(row) for row in cursor.fetchall()]
+
+    def get_context_avg_intensity(self, user_id=1, days=30):
+        with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute(
+                '''
+                SELECT context, AVG(intensity) as avg_intensity
+                FROM moods
+                WHERE user_id = ? AND timestamp >= datetime('now', '-' || ? || ' days') AND intensity IS NOT NULL AND (context IS NOT NULL AND context <> '')
+                GROUP BY context
+                ORDER BY avg_intensity DESC
+                ''',
+                (user_id, days)
+            )
+            return [dict(row) for row in cursor.fetchall()]
     
     def rate_suggestion(self, suggestion_id, rating):
         with sqlite3.connect(self.db_path) as conn:

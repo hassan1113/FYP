@@ -466,575 +466,531 @@
         <div class="analytics-bg-circle circle-3"></div>
     </div>
 
-        <div class="particles-container" id="particles"></div>
+    <div class="particles-container" id="particles"></div>
 
-        <div class="container">
-            <div class="row mb-4">
-                <div class="col">
-                    <h1 class="mb-3 fade-in">Mood Analytics</h1>
-                    <p class="lead fade-in">Detailed analysis of your emotional patterns over time.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Analytics Content -->
-    <div class="container py-4">
-        <!-- Stats Overview -->
+    <div class="container">
         <div class="row mb-4">
-            <div class="col-md-3 col-6">
-                <div class="stat-card fade-in">
-                    <i class="bi bi-emoji-smile feature-icon" style="font-size: 1.5rem;"></i>
-                    <div class="stat-number" id="stat1">7</div>
-                    <p>Moods This Week</p>
-                </div>
+            <div class="col">
+                <h1 class="mb-3 fade-in">Mood Analytics</h1>
+                <p class="lead fade-in">Detailed analysis of your emotional patterns over time.</p>
             </div>
-            <div class="col-md-3 col-6">
-                <div class="stat-card fade-in" style="animation-delay: 0.2s;">
-                    <i class="bi bi-graph-up feature-icon" style="font-size: 1.5rem;"></i>
-                    <div class="stat-number" id="stat2">7.4</div>
-                    <p>Average Intensity</p>
-                </div>
+        </div>
+    </div>
+</section>
+
+<!-- Analytics Content -->
+<div class="container py-4">
+    <!-- Stats Overview -->
+    <div class="row mb-4">
+        <div class="col-md-3 col-6">
+            <div class="stat-card fade-in">
+                <i class="bi bi-emoji-smile feature-icon" style="font-size: 1.5rem;"></i>
+                <div class="stat-number" id="stat1">{{ week_stats.total_entries or 0 if week_stats else 0 }}</div>
+                <p>Moods This Week</p>
             </div>
-            <div class="col-md-3 col-6">
-                <div class="stat-card fade-in" style="animation-delay: 0.4s;">
-                    <i class="bi bi-arrow-up-right feature-icon" style="font-size: 1.5rem;"></i>
-                    <div class="stat-number" id="stat3">12%</div>
-                    <p>Weekly Increase</p>
-                </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="stat-card fade-in" style="animation-delay: 0.2s;">
+                <i class="bi bi-graph-up feature-icon" style="font-size: 1.5rem;"></i>
+                <div class="stat-number" id="stat2">{{ ('%.1f'|format(week_stats.average_intensity)) if week_stats and
+                    week_stats.average_intensity else '0.0' }}</div>
+                <p>Average Intensity</p>
             </div>
-            <div class="col-md-3 col-6">
-                <div class="stat-card fade-in" style="animation-delay: 0.6s;">
-                    <i class="bi bi-award feature-icon" style="font-size: 1.5rem;"></i>
-                    <div class="stat-number" id="stat4">5</div>
-                    <p>Day Streak</p>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="stat-card fade-in" style="animation-delay: 0.4s;">
+                <i class="bi bi-arrow-up-right feature-icon" style="font-size: 1.5rem;"></i>
+                <div class="stat-number" id="stat3">12%</div>
+                <p>Weekly Increase</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="stat-card fade-in" style="animation-delay: 0.6s;">
+                <i class="bi bi-award feature-icon" style="font-size: 1.5rem;"></i>
+                <div class="stat-number" id="stat4">{{ week_stats.streak or 0 if week_stats else 0 }}</div>
+                <p>Day Streak</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mood Trends Chart -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm slide-up" style="animation-delay: 0.1s;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Mood Trends Over Time</h5>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary active"
+                            data-period="week">Week</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary"
+                            data-period="month">Month</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-period="year">Year</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="moodTrendChart" height="300"></canvas>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Mood Trends Chart -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card shadow-sm slide-up" style="animation-delay: 0.1s;">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Mood Trends Over Time</h5>
-                        <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-sm btn-outline-secondary active"
-                                data-period="week">Week</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary"
-                                data-period="month">Month</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary"
-                                data-period="year">Year</button>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="moodTrendChart" height="300"></canvas>
-                    </div>
+    <!-- Emotion Distribution and Context Charts -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm slide-up" style="animation-delay: 0.2s;">
+                <div class="card-header">
+                    <h5 class="mb-0">Emotion Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="emotionPieChart" height="300"></canvas>
                 </div>
             </div>
         </div>
-
-        <!-- Emotion Distribution and Context Charts -->
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <div class="card shadow-sm slide-up" style="animation-delay: 0.2s;">
-                    <div class="card-header">
-                        <h5 class="mb-0">Emotion Distribution</h5>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="emotionPieChart" height="300"></canvas>
-                    </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm slide-up" style="animation-delay: 0.3s;">
+                <div class="card-header">
+                    <h5 class="mb-0">Mood Intensity by Context</h5>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card shadow-sm slide-up" style="animation-delay: 0.3s;">
-                    <div class="card-header">
-                        <h5 class="mb-0">Mood Intensity by Context</h5>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="contextBarChart" height="300"></canvas>
-                    </div>
+                <div class="card-body">
+                    <canvas id="contextBarChart" height="300"></canvas>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Suggestion Effectiveness -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card shadow-sm slide-up" style="animation-delay: 0.4s;">
-                    <div class="card-header">
-                        <h5 class="mb-0">Suggestion Effectiveness</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Suggestion Type</th>
-                                        <th>Average Rating</th>
-                                        <th>Times Used</th>
-                                        <th>Effectiveness</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Breathing Exercise</td>
-                                        <td>4.2 / 5</td>
-                                        <td>12</td>
-                                        <td>
-                                            <div class="progress">
-                                                <div class="progress-bar bg-success" role="progressbar"
-                                                    style="width: 84%" aria-valuenow="4.2" aria-valuemin="0"
-                                                    aria-valuemax="5">
-                                                    84%
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Mindfulness Meditation</td>
-                                        <td>3.8 / 5</td>
-                                        <td>8</td>
-                                        <td>
-                                            <div class="progress">
-                                                <div class="progress-bar bg-success" role="progressbar"
-                                                    style="width: 76%" aria-valuenow="3.8" aria-valuemin="0"
-                                                    aria-valuemax="5">
-                                                    76%
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Physical Activity</td>
-                                        <td>4.5 / 5</td>
-                                        <td>15</td>
-                                        <td>
-                                            <div class="progress">
-                                                <div class="progress-bar bg-success" role="progressbar"
-                                                    style="width: 90%" aria-valuenow="4.5" aria-valuemin="0"
-                                                    aria-valuemax="5">
-                                                    90%
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Journaling</td>
-                                        <td>3.5 / 5</td>
-                                        <td>6</td>
-                                        <td>
-                                            <div class="progress">
-                                                <div class="progress-bar bg-success" role="progressbar"
-                                                    style="width: 70%" aria-valuenow="3.5" aria-valuemin="0"
-                                                    aria-valuemax="5">
-                                                    70%
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+    <!-- Suggestion Effectiveness -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm slide-up" style="animation-delay: 0.4s;">
+                <div class="card-header">
+                    <h5 class="mb-0">Suggestion Effectiveness</h5>
                 </div>
-            </div>
-        </div>
-
-        <!-- Insights & Recommendations -->
-        <div class="row">
-            <div class="col-12">
-                <div class="card shadow-sm slide-up" style="animation-delay: 0.3s;">
-                    <div class="card-header">
-                        <h5 class="mb-0">Insights & Recommendations</h5>
-                    </div>
-                    <div class="card-body">
-                        <div id="insights">
-                            <h6>Weekly Summary</h6>
-                            <p>Your most frequent emotion this week was <strong><span
-                                        class="badge bg-happy">Happy</span></strong> (12 times).</p>
-                            <p>You've experienced all 7 emotions this week: <span class="badge bg-angry">Angry</span>,
-                                <span class="badge bg-disgust">Disgust</span>, <span class="badge bg-fear">Fear</span>,
-                                <span class="badge bg-happy">Happy</span>, <span
-                                    class="badge bg-neutral">Neutral</span>, <span class="badge bg-sad">Sad</span>, and
-                                <span class="badge bg-surprise">Surprise</span>.</p>
-
-                            <h6>Recommendations</h6>
-                            <ul class="fade-in" style="animation-delay: 0.5s;">
-                                <li>Continue activities that maintain your positive mood</li>
-                                <li>Practice mindfulness when experiencing negative emotions</li>
-                                <li>Document what's working well for future reference</li>
-                                <li>Try incorporating breathing exercises to maintain emotional balance</li>
-                            </ul>
-                        </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Suggestion Type</th>
+                                    <th>Average Rating</th>
+                                    <th>Times Used</th>
+                                    <th>Effectiveness</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Breathing Exercise</td>
+                                    <td>4.2 / 5</td>
+                                    <td>12</td>
+                                    <td>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: 84%"
+                                                aria-valuenow="4.2" aria-valuemin="0" aria-valuemax="5">
+                                                84%
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Mindfulness Meditation</td>
+                                    <td>3.8 / 5</td>
+                                    <td>8</td>
+                                    <td>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: 76%"
+                                                aria-valuenow="3.8" aria-valuemin="0" aria-valuemax="5">
+                                                76%
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Physical Activity</td>
+                                    <td>4.5 / 5</td>
+                                    <td>15</td>
+                                    <td>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: 90%"
+                                                aria-valuenow="4.5" aria-valuemin="0" aria-valuemax="5">
+                                                90%
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Journaling</td>
+                                    <td>3.5 / 5</td>
+                                    <td>6</td>
+                                    <td>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: 70%"
+                                                aria-valuenow="3.5" aria-valuemin="0" aria-valuemax="5">
+                                                70%
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Color Scheme Toggle -->
-    <div class="color-scheme-toggle" id="colorToggle">
-        <i class="bi bi-palette"></i>
-        <div class="color-options" id="colorOptions">
-            <div class="color-option" style="background: #6c63ff;" data-color="#6c63ff"></div>
-            <div class="color-option" style="background: #ff6b6b;" data-color="#ff6b6b"></div>
-            <div class="color-option" style="background: #4cd964;" data-color="#4cd964"></div>
-            <div class="color-option" style="background: #5ac8fa;" data-color="#5ac8fa"></div>
-            <div class="color-option" style="background: #ff9500;" data-color="#ff9500"></div>
-            <div class="color-option" style="background: #ffcc00;" data-color="#ffcc00"></div>
-            <div class="color-option" style="background: #ff9500;" data-color="#ff9500"></div>
-            <div class="color-option" style="background: #ff6b6b;" data-color="#ff6b6b"></div>
+    <!-- Insights & Recommendations -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm slide-up" style="animation-delay: 0.3s;">
+                <div class="card-header">
+                    <h5 class="mb-0">Insights & Recommendations</h5>
+                </div>
+                <div class="card-body">
+                    <div id="insights">
+                        <h6>Weekly Summary</h6>
+                        <p>Your most frequent emotion this week was <strong><span
+                                    class="badge bg-happy">Happy</span></strong> (12 times).</p>
+                        <p>You've experienced all 7 emotions this week: <span class="badge bg-angry">Angry</span>,
+                            <span class="badge bg-disgust">Disgust</span>, <span class="badge bg-fear">Fear</span>,
+                            <span class="badge bg-happy">Happy</span>, <span class="badge bg-neutral">Neutral</span>,
+                            <span class="badge bg-sad">Sad</span>, and
+                            <span class="badge bg-surprise">Surprise</span>.
+                        </p>
+
+                        <h6>Recommendations</h6>
+                        <ul class="fade-in" style="animation-delay: 0.5s;">
+                            <li>Continue activities that maintain your positive mood</li>
+                            <li>Practice mindfulness when experiencing negative emotions</li>
+                            <li>Document what's working well for future reference</li>
+                            <li>Try incorporating breathing exercises to maintain emotional balance</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+</div>
+
+<!-- Color Scheme Toggle -->
+<div class="color-scheme-toggle" id="colorToggle">
+    <i class="bi bi-palette"></i>
+    <div class="color-options" id="colorOptions">
+        <div class="color-option" style="background: #6c63ff;" data-color="#6c63ff"></div>
+        <div class="color-option" style="background: #ff6b6b;" data-color="#ff6b6b"></div>
+        <div class="color-option" style="background: #4cd964;" data-color="#4cd964"></div>
+        <div class="color-option" style="background: #5ac8fa;" data-color="#5ac8fa"></div>
+        <div class="color-option" style="background: #ff9500;" data-color="#ff9500"></div>
+        <div class="color-option" style="background: #ffcc00;" data-color="#ffcc00"></div>
+        <div class="color-option" style="background: #ff9500;" data-color="#ff9500"></div>
+        <div class="color-option" style="background: #ff6b6b;" data-color="#ff6b6b"></div>
+    </div>
+</div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Create animated particles
-            const particlesContainer = document.getElementById('particles');
-            for (let i = 0; i < 15; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
+    document.addEventListener('DOMContentLoaded', function () {
+        // Create animated particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 15; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
 
-                const size = Math.random() * 15 + 5;
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
+            const size = Math.random() * 15 + 5;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
 
-                particle.style.left = `${Math.random() * 100}%`;
-                particle.style.top = `${Math.random() * 100}%`;
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.top = `${Math.random() * 100}%`;
 
-                particle.style.animationDelay = `${Math.random() * 5}s`;
+            particle.style.animationDelay = `${Math.random() * 5}s`;
 
-                particlesContainer.appendChild(particle);
-            }
+            particlesContainer.appendChild(particle);
+        }
 
-            // Scroll animation for elements
-            const fadeElements = document.querySelectorAll('.fade-in, .slide-up');
+        // Scroll animation for elements
+        const fadeElements = document.querySelectorAll('.fade-in, .slide-up');
 
-            function checkScroll() {
-                fadeElements.forEach(element => {
-                    const elementTop = element.getBoundingClientRect().top;
-                    const elementBottom = element.getBoundingClientRect().bottom;
-                    const isVisible = (elementTop < window.innerHeight - 100) && (elementBottom > 0);
+        function checkScroll() {
+            fadeElements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementBottom = element.getBoundingClientRect().bottom;
+                const isVisible = (elementTop < window.innerHeight - 100) && (elementBottom > 0);
 
-                    if (isVisible) {
-                        element.classList.add('animated');
-                    }
-                });
-            }
-
-            // Initial check
-            checkScroll();
-
-            // Check on scroll
-            window.addEventListener('scroll', checkScroll);
-
-            // Color scheme toggle
-            const colorToggle = document.getElementById('colorToggle');
-            const colorOptions = document.getElementById('colorOptions');
-
-            colorToggle.addEventListener('click', function () {
-                colorOptions.classList.toggle('active');
-            });
-
-            // Change color scheme
-            const colorOptionsList = document.querySelectorAll('.color-option');
-            colorOptionsList.forEach(option => {
-                option.addEventListener('click', function () {
-                    const newColor = this.getAttribute('data-color');
-                    document.documentElement.style.setProperty('--primary', newColor);
-
-                    // Close color options
-                    colorOptions.classList.remove('active');
-                });
-            });
-
-            // Sample data for charts
-            const weekStats = {
-                dates: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                intensities: [7, 8, 6, 9, 8, 9, 8],
-                emotion_counts: [
-                    { detected_emotion: 'Happy', count: 132 },
-                    { detected_emotion: 'Sad', count: 30 },
-                    { detected_emotion: 'Surprise', count: 20 },
-                    { detected_emotion: 'Disgust', count: 15 },
-                    { detected_emotion: 'fear', count: 10 },
-                    { detected_emotion: 'neutral', count: 25 },
-                    { detected_emotion: 'angry', count: 18 }
-                ],
-                context_counts: [
-                    { context: 'Work', avg_intensity: 7.2 },
-                    { context: 'Home', avg_intensity: 8.5 },
-                    { context: 'Social', avg_intensity: 8.8 },
-                    { context: 'Exercise', avg_intensity: 9.2 }
-                ]
-            };
-
-            const monthStats = {
-                dates: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                intensities: [6.8, 7.2, 7.5, 8.2],
-                emotion_counts: [
-                    { detected_emotion: 'Happy', count: 132 },
-                    { detected_emotion: 'Sad', count: 30 },
-                    { detected_emotion: 'Surprise', count: 20 },
-                    { detected_emotion: 'Disgust', count: 15 },
-                    { detected_emotion: 'fear', count: 10 },
-                    { detected_emotion: 'neutral', count: 25 },
-                    { detected_emotion: 'angry', count: 18 }
-                ],
-                context_counts: [
-                    { context: 'Work', avg_intensity: 6.8 },
-                    { context: 'Home', avg_intensity: 7.9 },
-                    { context: 'Social', avg_intensity: 8.4 },
-                    { context: 'Exercise', avg_intensity: 8.7 }
-                ]
-            };
-
-            const yearStats = {
-                dates: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                intensities: [6.5, 6.8, 7.2, 7.5, 7.8, 8.2, 8.5, 8.3, 8.0, 7.8, 7.5, 7.9],
-                emotion_counts: [
-                    { detected_emotion: 'Happy', count: 132 },
-                    { detected_emotion: 'Sad', count: 30 },
-                    { detected_emotion: 'Surprise', count: 20 },
-                    { detected_emotion: 'Disgust', count: 15 },
-                    { detected_emotion: 'fear', count: 10 },
-                    { detected_emotion: 'neutral', count: 25 },
-                    { detected_emotion: 'angry', count: 18 }
-                ],
-                context_counts: [
-                    { context: 'Work', avg_intensity: 6.9 },
-                    { context: 'Home', avg_intensity: 7.8 },
-                    { context: 'Social', avg_intensity: 8.3 },
-                    { context: 'Exercise', avg_intensity: 8.6 },
-                    { context: 'Travel', avg_intensity: 8.1 }
-                ]
-            };
-
-            // Chart instances
-            let moodTrendChart, emotionPieChart, contextBarChart;
-
-            // Initialize charts with week data by default
-            initCharts(weekStats);
-
-            // Add event listeners to period buttons
-            document.querySelectorAll('[data-period]').forEach(button => {
-                button.addEventListener('click', function () {
-                    // Update active state
-                    document.querySelectorAll('[data-period]').forEach(btn => {
-                        btn.classList.remove('active');
-                    });
-                    this.classList.add('active');
-
-                    // Load data for selected period
-                    const period = this.getAttribute('data-period');
-                    let data;
-                    if (period === 'week') data = weekStats;
-                    else if (period === 'month') data = monthStats;
-                    else if (period === 'year') data = yearStats;
-
-                    // Update charts
-                    updateCharts(data);
-                });
-            });
-
-            function initCharts(data) {
-                // Initialize Mood Trend Chart
-                const moodTrendCtx = document.getElementById('moodTrendChart').getContext('2d');
-                moodTrendChart = new Chart(moodTrendCtx, {
-                    type: 'line',
-                    data: {
-                        labels: data.dates || [],
-                        datasets: [{
-                            label: 'Mood Intensity',
-                            data: data.intensities || [],
-                            borderColor: 'rgb(103, 58, 183)',
-                            backgroundColor: 'rgba(103, 58, 183, 0.1)',
-                            tension: 0.4,
-                            fill: true,
-                            pointBackgroundColor: 'rgb(103, 58, 183)',
-                            pointRadius: 4,
-                            pointHoverRadius: 6
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            title: {
-                                display: true,
-                                text: 'Mood Intensity Over Time',
-                                font: {
-                                    size: 16
-                                }
-                            },
-                            legend: {
-                                display: false
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: false,
-                                min: 5,
-                                max: 10,
-                                title: {
-                                    display: true,
-                                    text: 'Intensity Level'
-                                }
-                            },
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: 'Time Period'
-                                }
-                            }
-                        }
-                    }
-                });
-
-                // Initialize Emotion Distribution Pie Chart
-                const emotionPieCtx = document.getElementById('emotionPieChart').getContext('2d');
-                const emotionLabels = data.emotion_counts ? data.emotion_counts.map(item => item.detected_emotion) : [];
-                const emotionData = data.emotion_counts ? data.emotion_counts.map(item => item.count) : [];
-                const emotionColors = emotionLabels.map(label => {
-                    const colorMap = {
-                        'Happy': '#1cc88a',
-                        'Sad': '#4e73df',
-                        'Surprise': '#36b9cc',
-                        'Disgust': '#858796',
-                        'fear': '#f6c23e',
-                        'neutral': '#1cc88a',
-                        'angry': '#e74a3b'
-                    };
-                    return colorMap[label] || '#7f8fa6';
-                });
-
-                emotionPieChart = new Chart(emotionPieCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: emotionLabels,
-                        datasets: [{
-                            data: emotionData,
-                            backgroundColor: emotionColors,
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'right',
-                            },
-                            title: {
-                                display: true,
-                                text: 'Emotion Distribution',
-                                font: {
-                                    size: 16
-                                }
-                            }
-                        },
-                        cutout: '60%'
-                    }
-                });
-
-                // Initialize Context Bar Chart
-                const contextBarCtx = document.getElementById('contextBarChart').getContext('2d');
-                const contextLabels = data.context_counts ? data.context_counts.map(item => item.context) : [];
-                const contextData = data.context_counts ? data.context_counts.map(item => item.avg_intensity) : [];
-
-                contextBarChart = new Chart(contextBarCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: contextLabels,
-                        datasets: [{
-                            label: 'Average Intensity',
-                            data: contextData,
-                            backgroundColor: 'rgba(54, 162, 235, 0.7)'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            title: {
-                                display: true,
-                                text: 'Mood Intensity by Context',
-                                font: {
-                                    size: 16
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                max: 10,
-                                title: {
-                                    display: true,
-                                    text: 'Intensity Level'
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            function updateCharts(data) {
-                // Update Mood Trend Chart
-                moodTrendChart.data.labels = data.dates || [];
-                moodTrendChart.data.datasets[0].data = data.intensities || [];
-                moodTrendChart.update();
-
-                // Update Emotion Distribution Pie Chart
-                const emotionLabels = data.emotion_counts ? data.emotion_counts.map(item => item.detected_emotion) : [];
-                const emotionData = data.emotion_counts ? data.emotion_counts.map(item => item.count) : [];
-                const emotionColors = emotionLabels.map(label => {
-                    const colorMap = {
-                        'Happy': '#1cc88a',
-                        'Sad': '#4e73df',
-                        'Surprise': '#36b9cc',
-                        'Disgust': '#858796',
-                        'fear': '#f6c23e',
-                        'neutral': '#1cc88a',
-                        'angry': '#e74a3b'
-                    };
-                    return colorMap[label] || '#7f8fa6';
-                });
-
-                emotionPieChart.data.labels = emotionLabels;
-                emotionPieChart.data.datasets[0].data = emotionData;
-                emotionPieChart.data.datasets[0].backgroundColor = emotionColors;
-                emotionPieChart.update();
-
-                // Update Context Bar Chart
-                const contextLabels = data.context_counts ? data.context_counts.map(item => item.context) : [];
-                const contextData = data.context_counts ? data.context_counts.map(item => item.avg_intensity) : [];
-
-                contextBarChart.data.labels = contextLabels;
-                contextBarChart.data.datasets[0].data = contextData;
-                contextBarChart.update();
-            }
-
-            // Interactive navbar
-            const navbar = document.querySelector('.navbar');
-            window.addEventListener('scroll', function () {
-                if (window.scrollY > 50) {
-                    navbar.style.padding = '10px 0';
-                    navbar.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
-                } else {
-                    navbar.style.padding = '15px 0';
-                    navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
+                if (isVisible) {
+                    element.classList.add('animated');
                 }
             });
+        }
 
-            // Initialize animations
-            document.querySelectorAll('.fade-in, .slide-up').forEach(function (element) {
-                setTimeout(function () {
-                    element.classList.add('animated');
-                }, 100);
+        // Initial check
+        checkScroll();
+
+        // Check on scroll
+        window.addEventListener('scroll', checkScroll);
+
+        // Color scheme toggle
+        const colorToggle = document.getElementById('colorToggle');
+        const colorOptions = document.getElementById('colorOptions');
+
+        colorToggle.addEventListener('click', function () {
+            colorOptions.classList.toggle('active');
+        });
+
+        // Change color scheme
+        const colorOptionsList = document.querySelectorAll('.color-option');
+        colorOptionsList.forEach(option => {
+            option.addEventListener('click', function () {
+                const newColor = this.getAttribute('data-color');
+                document.documentElement.style.setProperty('--primary', newColor);
+
+                // Close color options
+                colorOptions.classList.remove('active');
             });
+        });
+
+        // Backend-provided data (safe JSON)
+        const WEEK_RAW = {{ (week_stats or { }) | tojson }};
+    const MONTH_RAW = {{ (month_stats or { }) | tojson }};
+    const YEAR_RAW = {{ (year_stats or { }) | tojson }};
+    const CONTEXT_RAW = {{ (context_stats or[]) | tojson }};
+
+    function buildStats(raw) {
+        const daily = raw.daily_averages || {};
+        const dates = Object.keys(daily);
+        const intensities = dates.map(d => daily[d]);
+        const emotion_counts = (raw.emotion_counts || []).map(it => ({
+            detected_emotion: it.detected_emotion,
+            count: it.count
+        }));
+        return { dates, intensities, emotion_counts };
+    }
+
+    const weekStats = buildStats(WEEK_RAW);
+    const monthStats = buildStats(MONTH_RAW);
+    const yearStats = buildStats(YEAR_RAW);
+    const contextStats = (CONTEXT_RAW || []).map(it => ({ context: it.context, avg_intensity: it.avg_intensity }));
+
+    // Chart instances
+    let moodTrendChart, emotionPieChart, contextBarChart;
+
+    // Initialize charts with week data by default
+    initCharts(weekStats);
+
+    // Add event listeners to period buttons
+    document.querySelectorAll('[data-period]').forEach(button => {
+        button.addEventListener('click', function () {
+            // Update active state
+            document.querySelectorAll('[data-period]').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            this.classList.add('active');
+
+            // Load data for selected period
+            const period = this.getAttribute('data-period');
+            let data;
+            if (period === 'week') data = weekStats;
+            else if (period === 'month') data = monthStats;
+            else if (period === 'year') data = yearStats;
+
+            // Update charts
+            updateCharts(data);
+        });
+    });
+
+    function initCharts(data) {
+        // Initialize Mood Trend Chart
+        const moodTrendCtx = document.getElementById('moodTrendChart').getContext('2d');
+        moodTrendChart = new Chart(moodTrendCtx, {
+            type: 'line',
+            data: {
+                labels: data.dates || [],
+                datasets: [{
+                    label: 'Mood Intensity',
+                    data: data.intensities || [],
+                    borderColor: 'rgb(103, 58, 183)',
+                    backgroundColor: 'rgba(103, 58, 183, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: 'rgb(103, 58, 183)',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Mood Intensity Over Time',
+                        font: {
+                            size: 16
+                        }
+                    },
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 5,
+                        max: 10,
+                        title: {
+                            display: true,
+                            text: 'Intensity Level'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Time Period'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Initialize Emotion Distribution Pie Chart
+        const emotionPieCtx = document.getElementById('emotionPieChart').getContext('2d');
+        const emotionLabels = data.emotion_counts ? data.emotion_counts.map(item => item.detected_emotion) : [];
+        const emotionData = data.emotion_counts ? data.emotion_counts.map(item => item.count) : [];
+        const emotionColors = emotionLabels.map(label => {
+            const colorMap = {
+                'Happy': '#1cc88a',
+                'Sad': '#4e73df',
+                'Surprise': '#36b9cc',
+                'Disgust': '#858796',
+                'fear': '#f6c23e',
+                'neutral': '#1cc88a',
+                'angry': '#e74a3b'
+            };
+            return colorMap[label] || '#7f8fa6';
+        });
+
+        emotionPieChart = new Chart(emotionPieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: emotionLabels,
+                datasets: [{
+                    data: emotionData,
+                    backgroundColor: emotionColors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Emotion Distribution',
+                        font: {
+                            size: 16
+                        }
+                    }
+                },
+                cutout: '60%'
+            }
+        });
+
+        // Initialize Context Bar Chart
+        const contextBarCtx = document.getElementById('contextBarChart').getContext('2d');
+        const contextLabels = (contextStats || []).map(item => item.context);
+        const contextData = (contextStats || []).map(item => item.avg_intensity);
+
+        contextBarChart = new Chart(contextBarCtx, {
+            type: 'bar',
+            data: {
+                labels: contextLabels,
+                datasets: [{
+                    label: 'Average Intensity',
+                    data: contextData,
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Mood Intensity by Context',
+                        font: {
+                            size: 16
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 10,
+                        title: {
+                            display: true,
+                            text: 'Intensity Level'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function updateCharts(data) {
+        // Update Mood Trend Chart
+        moodTrendChart.data.labels = data.dates || [];
+        moodTrendChart.data.datasets[0].data = data.intensities || [];
+        moodTrendChart.update();
+
+        // Update Emotion Distribution Pie Chart
+        const emotionLabels = data.emotion_counts ? data.emotion_counts.map(item => item.detected_emotion) : [];
+        const emotionData = data.emotion_counts ? data.emotion_counts.map(item => item.count) : [];
+        const emotionColors = emotionLabels.map(label => {
+            const colorMap = {
+                'Happy': '#1cc88a',
+                'Sad': '#4e73df',
+                'Surprise': '#36b9cc',
+                'Disgust': '#858796',
+                'fear': '#f6c23e',
+                'neutral': '#1cc88a',
+                'angry': '#e74a3b'
+            };
+            return colorMap[label] || '#7f8fa6';
+        });
+
+        emotionPieChart.data.labels = emotionLabels;
+        emotionPieChart.data.datasets[0].data = emotionData;
+        emotionPieChart.data.datasets[0].backgroundColor = emotionColors;
+        emotionPieChart.update();
+
+        // Update Context Bar Chart
+        const contextLabels = (contextStats || []).map(item => item.context);
+        const contextData = (contextStats || []).map(item => item.avg_intensity);
+
+        contextBarChart.data.labels = contextLabels;
+        contextBarChart.data.datasets[0].data = contextData;
+        contextBarChart.update();
+    }
+
+    // Interactive navbar
+    const navbar = document.querySelector('.navbar');
+    window.addEventListener('scroll', function () {
+        if (window.scrollY > 50) {
+            navbar.style.padding = '10px 0';
+            navbar.style.boxShadow = '0 5px 20px rgba(0, 0, 0, 0.1)';
+        } else {
+            navbar.style.padding = '15px 0';
+            navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
+        }
+    });
+
+    // Initialize animations
+    document.querySelectorAll('.fade-in, .slide-up').forEach(function (element) {
+        setTimeout(function () {
+            element.classList.add('animated');
+        }, 100);
+    });
         });
 </script>
 {% endblock %}
