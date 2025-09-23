@@ -83,21 +83,50 @@ class DatabaseManager:
             
             conn.commit()
     
-    def get_mood_history(self, user_id=1, days=7, limit=None):
+    def get_suggestions_by_mood(self, mood_id):
+        with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute('''
+                SELECT id, mood_id, suggestion_type, content, helpful_rating, used
+                FROM suggestions
+                WHERE mood_id = ?
+                ORDER BY id ASC
+            ''', (mood_id,))
+            return [dict(row) for row in cursor.fetchall()]
+    
+    def mark_suggestion_used(self, user_id, suggestion_id):
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                UPDATE suggestions
+                SET used = TRUE
+                WHERE id = ?
+            ''', (suggestion_id,))
+            conn.commit()
+            return cursor.rowcount > 0
+    
+    def get_mood_history(self, user_id=1, days=7, limit=None, emotion=None):
         with sqlite3.connect(self.db_path) as conn:
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
             
-            query = '''
+            base = '''
                 SELECT * FROM moods 
                 WHERE user_id = ? AND timestamp >= datetime('now', '-' || ? || ' days')
-                ORDER BY timestamp DESC
             '''
+            params = [user_id, days]
+            
+            if emotion:
+                base += " AND detected_emotion = ?"
+                params.append(emotion)
+            
+            base += " ORDER BY timestamp DESC"
             
             if limit:
-                query += f" LIMIT {limit}"
+                base += f" LIMIT {limit}"
             
-            cursor.execute(query, (user_id, days))
+            cursor.execute(base, tuple(params))
             return [dict(row) for row in cursor.fetchall()]
     
     def get_mood_stats(self, user_id=1, days=30):
@@ -224,7 +253,7 @@ class DatabaseManager:
             )
             return [dict(row) for row in cursor.fetchall()]
     
-    def rate_suggestion(self, suggestion_id, rating):
+    def rate_suggestion(self, user_id, suggestion_id, rating):
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             cursor.execute('''

@@ -5,7 +5,7 @@
 {% block content %}
 <section class="header-section">
     <div class="dashboard-header">
-        <div class="dashboard-bg">
+        <div class="dashboard-bg" style="position: absolute;">
             <div class="dashboard-bg-circle circle-1"></div>
             <div class="dashboard-bg-circle circle-2"></div>
             <div class="dashboard-bg-circle circle-3"></div>
@@ -41,7 +41,7 @@
                     <form action="{{ url_for('mood_log') }}" method="get" class="row g-3">
                         <div class="col-md-4 col-sm-6">
                             <label for="days" class="form-label">Time Period</label>
-                            <select class="form-select" id="days" name="days" onchange="this.form.submit()">
+                            <select class="form-select" id="days" name="days">
                                 <option value="7" {% if days==7 %}selected{% endif %}>Last 7 days</option>
                                 <option value="30" {% if days==30 %}selected{% endif %}>Last 30 days</option>
                                 <option value="90" {% if days==90 %}selected{% endif %}>Last 3 months</option>
@@ -51,19 +51,21 @@
                         </div>
                         <div class="col-md-4 col-sm-6">
                             <label for="emotion" class="form-label">Emotion</label>
-                            <select class="form-select" id="emotion" name="emotion">
-                                <option value="">All Emotions</option>
-                                <option value="Happy">Happy</option>
-                                <option value="Sad">Sad</option>
-                                <option value="Angry">Angry</option>
-                                <option value="Surprise">Surprise</option>
-                                <option value="Fear">Fear</option>
-                                <option value="Disgust">Disgust</option>
-                                <option value="Neutral">Neutral</option>
+                            <select class="form-select" id="emotion" name="emotion" onchange="this.form.submit()">
+                                <option value="" {% if not emotion %}selected{% endif %}>All Emotions</option>
+                                <option value="Happy" {% if emotion=='Happy' %}selected{% endif %}>Happy</option>
+                                <option value="Sad" {% if emotion=='Sad' %}selected{% endif %}>Sad</option>
+                                <option value="Angry" {% if emotion=='Angry' %}selected{% endif %}>Angry</option>
+                                <option value="Surprise" {% if emotion=='Surprise' %}selected{% endif %}>Surprise
+                                </option>
+                                <option value="Fear" {% if emotion=='Fear' %}selected{% endif %}>Fear</option>
+                                <option value="Disgust" {% if emotion=='Disgust' %}selected{% endif %}>Disgust</option>
+                                <option value="Neutral" {% if emotion=='Neutral' %}selected{% endif %}>Neutral</option>
                             </select>
                         </div>
-                        <div class="col-md-4 col-12 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                        <div class="col-md-4 col-12 d-flex align-items-end gap-2">
+                            <!-- <button type="submit" class="btn btn-primary w-100">Apply Filters</button> -->
+                            <button type="button" id="resetFilters" class="btn btn-outline-secondary">Reset</button>
                         </div>
                     </form>
                 </div>
@@ -81,57 +83,8 @@
                         <i class="bi bi-plus-circle me-1"></i> New Entry
                     </a>
                 </div>
-                <div class="card-body">
-                    {% if mood_entries %}
-                    <div class="d-block d-md-none mb-3 alert alert-info">
-                        <small><i class="bi bi-info-circle me-1"></i> Swipe horizontally to see all mood data</small>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Date & Time</th>
-                                    <th>Mood</th>
-                                    <th class="d-none d-md-table-cell">Confidence</th>
-                                    <th class="d-none d-lg-table-cell">Context</th>
-                                    <th class="d-none d-md-table-cell">Notes</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for entry in mood_entries %}
-                                <tr>
-                                    <td>{{ entry.timestamp }}</td>
-                                    <td>
-                                        <span class="badge bg-{{ entry.detected_emotion.lower() }}">{{
-                                            entry.detected_emotion }}</span>
-                                    </td>
-                                    <td class="d-none d-md-table-cell">
-                                        {% if entry.confidence_score is not none %}
-                                        {{ "%.2f"|format(entry.confidence_score * 100) }}%
-                                        {% else %}
-                                        N/A
-                                        {% endif %}
-                                    </td>
-                                    <td class="d-none d-lg-table-cell">{{ entry.context or 'N/A' }}</td>
-                                    <td class="d-none d-md-table-cell">{{ entry.notes or 'N/A' }}</td>
-                                    <td>
-                                        <button class="btn btn-sm btn-outline-primary view-details"
-                                            data-entry-id="{{ entry.id }}">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    {% else %}
-                    <div class="alert alert-info">
-                        <i class="bi bi-info-circle me-2"></i> No mood entries found for the selected time period.
-                        <a href="{{ url_for('mood_logger') }}" class="alert-link">Log your first mood!</a>
-                    </div>
-                    {% endif %}
+                <div class="card-body" id="moodTableWrap">
+                    {% include 'partials/mood_table.html' %}
                 </div>
             </div>
         </div>
@@ -160,83 +113,95 @@
 <!-- JavaScript for Mood Log Page -->
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Initialize view details buttons
-        document.querySelectorAll('.view-details').forEach(button => {
-            button.addEventListener('click', function () {
-                const entryId = this.getAttribute('data-entry-id');
-                // In a real implementation, you would fetch the entry details via AJAX
-                // For now, we'll just show a placeholder
-
-                const modalContent = document.getElementById('moodDetailsContent');
-                modalContent.innerHTML = `
-                    <div class="text-center">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                        <p class="mt-3">Loading entry details...</p>
-                    </div>
-                `;
-
-                // Show the modal
-                const modal = new bootstrap.Modal(document.getElementById('moodDetailsModal'));
-                modal.show();
-
-                // Simulate loading data (in a real app, this would be an API call)
-                setTimeout(() => {
-                    // Find the entry in the table
-                    const row = this.closest('tr');
-                    const date = row.cells[0].textContent;
-                    const emotion = row.cells[1].textContent.trim();
-                    const confidence = row.cells[2].textContent;
-                    const context = row.cells[3].textContent;
-                    const notes = row.cells[4].textContent;
-
-                    // Update modal content
-                    modalContent.innerHTML = `
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <h6 class="fw-bold">Date & Time</h6>
-                                    <p class="mb-0">${date}</p>
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <h6 class="fw-bold">Detected Emotion</h6>
-                                    <p class="mb-0"><span class="badge bg-${emotion.toLowerCase()}">${emotion}</span></p>
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <h6 class="fw-bold">Confidence Score</h6>
-                                    <p class="mb-0">${confidence}</p>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <h6 class="fw-bold">Context</h6>
-                                    <p class="mb-0">${context}</p>
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <h6 class="fw-bold">Notes</h6>
-                                    <p class="mb-0">${notes}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row mt-3">
-                            <div class="col-12">
-                                <h6>Suggestions</h6>
-                                <ul class="list-group">
-                                    <li class="list-group-item">Take a few deep breaths</li>
-                                    <li class="list-group-item">Listen to calming music</li>
-                                    <li class="list-group-item">Go for a short walk</li>
-                                </ul>
-                            </div>
-                        </div>
-                    `;
-                }, 1000);
+        // AJAX filter apply
+        const form = document.querySelector('#filterCollapse form');
+        const wrap = document.getElementById('moodTableWrap');
+        function loadTable() {
+            const params = new URLSearchParams(new FormData(form));
+            fetch(`/mood_log_partial?${params.toString()}`)
+                .then(r => r.text())
+                .then(html => {
+                    wrap.innerHTML = html;
+                    wireDetailsButtons();
+                })
+                .catch(() => { /* ignore */ });
+        }
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            loadTable();
+        });
+        form.querySelectorAll('select').forEach(sel => {
+            sel.addEventListener('change', function (e) {
+                e.preventDefault();
+                loadTable();
             });
         });
+        const resetBtn = document.getElementById('resetFilters');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function () {
+                form.querySelector('#days').value = '30';
+                const emo = form.querySelector('#emotion');
+                if (emo) emo.value = '';
+                loadTable();
+                history.replaceState({}, '', '{{ url_for("mood_log") }}');
+            });
+        }
+
+        function wireDetailsButtons() {
+            document.querySelectorAll('.view-details').forEach(button => {
+                button.addEventListener('click', function () {
+                    const entryId = this.getAttribute('data-entry-id');
+                    const modalContent = document.getElementById('moodDetailsContent');
+                    modalContent.innerHTML = `
+                        <div class="text-center">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-3">Loading entry details...</p>
+                        </div>
+                    `;
+                    const modal = new bootstrap.Modal(document.getElementById('moodDetailsModal'));
+                    modal.show();
+                    setTimeout(() => {
+                        const row = this.closest('tr');
+                        const date = row.cells[0].textContent;
+                        const emotion = row.cells[1].textContent.trim();
+                        const confidence = row.cells[2]?.textContent || 'N/A';
+                        const context = row.cells[3]?.textContent || 'N/A';
+                        const notes = row.cells[4]?.textContent || 'N/A';
+                        modalContent.innerHTML = `
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <h6 class="fw-bold">Date & Time</h6>
+                                        <p class="mb-0">${date}</p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h6 class="fw-bold">Detected Emotion</h6>
+                                        <p class="mb-0"><span class="badge bg-${emotion.toLowerCase()}">${emotion}</span></p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h6 class="fw-bold">Confidence Score</h6>
+                                        <p class="mb-0">${confidence}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <h6 class="fw-bold">Context</h6>
+                                        <p class="mb-0">${context}</p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h6 class="fw-bold">Notes</h6>
+                                        <p class="mb-0">${notes}</p>
+                                    </div>
+                                </div>
+                            </div>`;
+                    }, 500);
+                });
+            });
+        }
+        wireDetailsButtons();
+        // Initialize view details buttons
     });
 </script>
 {% endblock %}

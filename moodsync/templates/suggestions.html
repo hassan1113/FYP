@@ -11,61 +11,72 @@
         transition: all 0.3s ease;
         overflow: hidden;
     }
-    
+
     .card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
     }
-    
+
     .badge {
         font-size: 0.85em;
         padding: 0.5em 0.8em;
         border-radius: 20px;
         transition: all 0.3s ease;
     }
-    
+
     .badge:hover {
         transform: scale(1.1);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
-    
+
     .rating-star {
         cursor: pointer;
         font-size: 1.5rem;
         transition: transform 0.2s;
     }
-    
+
     .rating-star:hover {
         transform: scale(1.2);
     }
-    
+
     /* Animation classes */
     .fade-in {
         opacity: 0;
         transition: opacity 1s ease;
     }
-    
+
     .slide-up {
         opacity: 0;
         transform: translateY(30px);
         transition: opacity 0.8s ease, transform 0.8s ease;
     }
-    
+
     .animated {
         opacity: 1;
         transform: translateY(0);
     }
-    
+
     .pulse {
         animation: pulse 2s infinite;
     }
-    
+
     @keyframes pulse {
-        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(var(--bs-primary-rgb), 0.7); }
-        70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(var(--bs-primary-rgb), 0); }
-        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(var(--bs-primary-rgb), 0); }
+        0% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(var(--bs-primary-rgb), 0.7);
+        }
+
+        70% {
+            transform: scale(1);
+            box-shadow: 0 0 0 10px rgba(var(--bs-primary-rgb), 0);
+        }
+
+        100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(var(--bs-primary-rgb), 0);
+        }
     }
-    
+
     blockquote {
         border-left: 4px solid var(--bs-primary);
         padding-left: 1.5rem;
@@ -76,56 +87,94 @@
         border-radius: 0.5rem;
         transition: all 0.3s ease;
     }
-    
+
     blockquote:hover {
         transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
     }
-    
+
     .card-header {
         background: linear-gradient(45deg, rgba(var(--bs-primary-rgb), 0.1), rgba(var(--bs-info-rgb), 0.1));
         border-bottom: none;
+    }
+
+    /* Make AI chat input a bit wider */
+    #aiChatForm #aiInput {
+        flex: 1 1 88%;
+    }
+
+    #aiChatForm button {
+        flex: 0 0 auto;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-    <div class="container py-5">
-        <div class="row mb-4 fade-in">
-            <div class="col text-center">
-                <h1 class="display-4 mb-3">Personalized Suggestions</h1>
-                <p class="lead">Based on your recent mood: 
-                    <span class="badge bg-primary px-3 py-2" style="font-size: 1rem; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
-                        <i class="bi bi-emoji-smile me-2"></i>{{ emotion|title }}
-                    </span>
-                </p>
-                <hr class="my-4 w-50 mx-auto" style="opacity: 0.2;">
-            </div>
+<div class="container py-5">
+    <div class="row mb-4 fade-in">
+        <div class="col text-center">
+            <h1 class="display-4 mb-3">Personalized Suggestions</h1>
+            <p class="lead">Based on your recent mood:
+                <span class="badge bg-primary px-3 py-2"
+                    style="font-size: 1rem; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+                    <i class="bi bi-emoji-smile me-2"></i>{{ emotion|title }}
+                </span>
+            </p>
+            <hr class="my-4 w-50 mx-auto" style="opacity: 0.2;">
         </div>
+    </div>
 
-        <div class="row mb-5">
-            <div class="col-12">
-                <div class="card shadow slide-up" style="animation-delay: 0.1s; border-radius: 15px; background: linear-gradient(145deg, #f8f9fa, #ffffff);">
-                    <div class="card-header" style="background: linear-gradient(45deg, rgba(var(--bs-primary-rgb), 0.1), rgba(var(--bs-info-rgb), 0.2)); border-radius: 15px 15px 0 0;">
-                        <h5 class="mb-0 d-flex align-items-center">
-                            <i class="bi bi-quote me-2" style="font-size: 1.5rem;"></i>
-                            <span>Daily Inspiration</span>
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <blockquote class="blockquote text-center pulse">
-                            <p style="font-size: 1.3rem; line-height: 1.6;">{{ quote }}</p>
-                        </blockquote>
-                    </div>
+    <!-- Top row: Daily Inspiration (left) + AI Chat (right) -->
+    <div class="row mb-5">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow slide-up"
+                style="animation-delay: 0.1s; border-radius: 15px; background: linear-gradient(145deg, #f8f9fa, #ffffff);">
+                <div class="card-header"
+                    style="background: linear-gradient(45deg, rgba(var(--bs-primary-rgb), 0.1), rgba(var(--bs-info-rgb), 0.2)); border-radius: 15px 15px 0 0;">
+                    <h5 class="mb-0 d-flex align-items-center">
+                        <i class="bi bi-quote me-2" style="font-size: 1.5rem;"></i>
+                        <span>Daily Inspiration</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <blockquote class="blockquote text-center pulse">
+                        <p style="font-size: 1.3rem; line-height: 1.6;">{{ quote }}</p>
+                    </blockquote>
                 </div>
             </div>
         </div>
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow" style="border-radius: 14px; overflow: hidden;">
+                <div class="card-header d-flex align-items-center"
+                    style="background: linear-gradient(45deg, rgba(var(--bs-primary-rgb), 0.1), rgba(var(--bs-info-rgb), 0.2));">
+                    <i class="bi bi-robot me-2"></i>
+                    <strong>AI Support Chat</strong>
+                    <span class="ms-auto small text-muted">Powered by Gemini</span>
+                </div>
+                <div class="card-body" id="aiChatBody" style="max-height: 320px; overflow-y: auto;"
+                    data-suggestions='{{ suggestions|tojson|e }}'>
+                    <div class="text-muted small mb-2">Mood context: <span class="badge bg-secondary">{{ emotion|title
+                            }}</span></div>
+                    <div id="aiMessages" class="d-flex flex-column gap-2"></div>
+                </div>
+                <div class="card-footer bg-white">
+                    <form id="aiChatForm" class="d-flex gap-2">
+                        <input id="aiInput" class="form-control" type="text"
+                            placeholder="Ask for tips, e.g. 'I feel anxious'" autocomplete="off" />
+                        <button class="btn btn-primary" type="submit"><i class="bi bi-send"></i></button>
+                    </form>
+                    <div id="aiError" class="text-danger small mt-2" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        <div class="row mb-4">
-            {% for suggestion in suggestions %}
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card shadow h-100 slide-up" style="animation-delay: {{ loop.index * 0.1 }}s; border-radius: 15px; border: none; overflow: hidden;">
-                    <div class="card-header" style="background: linear-gradient(45deg, 
+    <div class="row mb-4">
+        {% for suggestion in suggestions %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card shadow h-100 slide-up"
+                style="animation-delay: {{ loop.index * 0.1 }}s; border-radius: 15px; border: none; overflow: hidden;">
+                <div class="card-header" style="background: linear-gradient(45deg, 
                         {% if suggestion.type == 'activities' %}
                             rgba(var(--bs-success-rgb), 0.2), rgba(var(--bs-info-rgb), 0.1)
                         {% elif suggestion.type == 'wellness' %}
@@ -138,153 +187,114 @@
                             rgba(var(--bs-secondary-rgb), 0.1), rgba(var(--bs-light-rgb), 0.2)
                         {% endif %}
                     ); border-radius: 15px 15px 0 0;">
-                        <h5 class="mb-0 d-flex align-items-center">
-                            {% if suggestion.type == 'activities' %}
-                            <i class="bi bi-activity me-2" style="font-size: 1.3rem; color: var(--bs-success);"></i>Activity Suggestion
-                            {% elif suggestion.type == 'wellness' %}
-                            <i class="bi bi-heart-fill me-2" style="font-size: 1.3rem; color: var(--bs-danger);"></i>Wellness Tip
-                            {% elif suggestion.type == 'productivity' %}
-                            <i class="bi bi-lightning-charge-fill me-2" style="font-size: 1.3rem; color: var(--bs-primary);"></i>Productivity Boost
-                            {% elif suggestion.type == 'social' %}
-                            <i class="bi bi-people-fill me-2" style="font-size: 1.3rem; color: var(--bs-purple);"></i>Social Connection
-                            {% else %}
-                            <i class="bi bi-lightbulb-fill me-2" style="font-size: 1.3rem; color: var(--bs-warning);"></i>Suggestion
-                            {% endif %}
-                        </h5>
-                    </div>
-                    <div class="card-body d-flex flex-column" style="background: linear-gradient(145deg, #f8f9fa, #ffffff);">
-                        <p class="card-text flex-grow-1" style="font-size: 1.05rem; line-height: 1.5;">{{ suggestion.content }}</p>
-                        <div class="mt-3 pt-3 border-top">
-                            <p class="text-muted small mb-2">How helpful was this suggestion?</p>
-                            <div class="rating" data-suggestion-id="{{ suggestion.id|default(loop.index) }}">
-                                <i class="bi bi-star-fill rating-star" data-rating="1" style="color: #e0e0e0;"></i>
-                                <i class="bi bi-star-fill rating-star" data-rating="2" style="color: #e0e0e0;"></i>
-                                <i class="bi bi-star-fill rating-star" data-rating="3" style="color: #e0e0e0;"></i>
-                                <i class="bi bi-star-fill rating-star" data-rating="4" style="color: #e0e0e0;"></i>
-                                <i class="bi bi-star-fill rating-star" data-rating="5" style="color: #e0e0e0;"></i>
-                            </div>
-                        </div>
-                    </div>
+                    <h5 class="mb-0 d-flex align-items-center">
+                        {% if suggestion.type == 'activities' %}
+                        <i class="bi bi-activity me-2" style="font-size: 1.3rem; color: var(--bs-success);"></i>Activity
+                        Suggestion
+                        {% elif suggestion.type == 'wellness' %}
+                        <i class="bi bi-heart-fill me-2"
+                            style="font-size: 1.3rem; color: var(--bs-danger);"></i>Wellness Tip
+                        {% elif suggestion.type == 'productivity' %}
+                        <i class="bi bi-lightning-charge-fill me-2"
+                            style="font-size: 1.3rem; color: var(--bs-primary);"></i>Productivity Boost
+                        {% elif suggestion.type == 'social' %}
+                        <i class="bi bi-people-fill me-2" style="font-size: 1.3rem; color: var(--bs-purple);"></i>Social
+                        Connection
+                        {% else %}
+                        <i class="bi bi-lightbulb-fill me-2"
+                            style="font-size: 1.3rem; color: var(--bs-warning);"></i>Suggestion
+                        {% endif %}
+                    </h5>
                 </div>
-            </div>
-            {% endfor %}
-            
-            <!-- Additional fixed suggestions -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card shadow h-100 slide-up" style="animation-delay: 0.5s; border-radius: 15px; border: none; overflow: hidden;">
-                    <div class="card-header" style="background: linear-gradient(45deg, rgba(var(--bs-info-rgb), 0.2), rgba(var(--bs-primary-rgb), 0.1)); border-radius: 15px 15px 0 0;">
-                        <h5 class="mb-0 d-flex align-items-center">
-                            <i class="bi bi-music-note-beamed me-2" style="font-size: 1.3rem; color: var(--bs-info);"></i>
-                            <span>Mindfulness</span>
-                        </h5>
-                    </div>
-                    <div class="card-body d-flex flex-column" style="background: linear-gradient(145deg, #f8f9fa, #ffffff);">
-                        <p class="card-text flex-grow-1" style="font-size: 1.05rem; line-height: 1.5;">Try a guided meditation session. Even 10 minutes can help center your thoughts and reduce anxiety. Many free apps are available.</p>
-                        <div class="mt-3 pt-3 border-top">
-                            <p class="text-muted small mb-2">How helpful was this suggestion?</p>
-                            <div class="rating" data-suggestion-id="5">
-                                <i class="bi bi-star-fill rating-star" data-rating="1" style="color: #e0e0e0;"></i>
-                                <i class="bi bi-star-fill rating-star" data-rating="2" style="color: #e0e0e0;"></i>
-                                <i class="bi bi-star-fill rating-star" data-rating="3" style="color: #e0e0e0;"></i>
-                                <i class="bi bi-star-fill rating-star" data-rating="4" style="color: #e0e0e0;"></i>
-                                <i class="bi bi-star-fill rating-star" data-rating="5" style="color: #e0e0e0;"></i>
-                            </div>
+                <div class="card-body d-flex flex-column"
+                    style="background: linear-gradient(145deg, #f8f9fa, #ffffff);">
+                    <p class="card-text flex-grow-1" style="font-size: 1.05rem; line-height: 1.5;">{{ suggestion.content
+                        }}</p>
+                    <div class="mt-3 pt-3 border-top">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                            <p class="text-muted small mb-0">How helpful was this suggestion?</p>
+                            <button type="button" class="btn btn-sm btn-outline-primary use-suggestion-btn"
+                                data-suggestion-id="{{ suggestion.id|default(loop.index) }}">
+                                I tried this
+                            </button>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card shadow h-100 slide-up" style="animation-delay: 0.6s; border-radius: 15px; border: none; overflow: hidden;">
-                    <div class="card-header" style="background: linear-gradient(45deg, rgba(var(--bs-warning-rgb), 0.2), rgba(var(--bs-light-rgb), 0.2)); border-radius: 15px 15px 0 0;">
-                        <h5 class="mb-0 d-flex align-items-center">
-                            <i class="bi bi-journal-text me-2" style="font-size: 1.3rem; color: var(--bs-warning);"></i>
-                            <span>Reflection</span>
-                        </h5>
-                    </div>
-                    <div class="card-body d-flex flex-column" style="background: linear-gradient(145deg, #f8f9fa, #ffffff);">
-                        <p class="card-text flex-grow-1" style="font-size: 1.05rem; line-height: 1.5;">Journal about three things you're grateful for today. Gratitude practice has been shown to increase happiness and life satisfaction.</p>
-                        <div class="mt-3 pt-3 border-top">
-                            <p class="text-muted small mb-2">How helpful was this suggestion?</p>
-                            <div class="rating" data-suggestion-id="6">
-                                <i class="bi bi-star-fill rating-star" data-rating="1" style="color: #e0e0e0;"></i>
-                                <i class="bi bi-star-fill rating-star" data-rating="2" style="color: #e0e0e0;"></i>
-                                <i class="bi bi-star-fill rating-star" data-rating="3" style="color: #e0e0e0;"></i>
-                                <i class="bi bi-star-fill rating-star" data-rating="4" style="color: #e0e0e0;"></i>
-                                <i class="bi bi-star-fill rating-star" data-rating="5" style="color: #e0e0e0;"></i>
-                            </div>
+                        <div class="rating" data-suggestion-id="{{ suggestion.id|default(loop.index) }}">
+                            <i class="bi bi-star-fill rating-star" data-rating="1" style="color: #e0e0e0;"></i>
+                            <i class="bi bi-star-fill rating-star" data-rating="2" style="color: #e0e0e0;"></i>
+                            <i class="bi bi-star-fill rating-star" data-rating="3" style="color: #e0e0e0;"></i>
+                            <i class="bi bi-star-fill rating-star" data-rating="4" style="color: #e0e0e0;"></i>
+                            <i class="bi bi-star-fill rating-star" data-rating="5" style="color: #e0e0e0;"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        {% endfor %}
 
-        <div class="row mb-5">
-            <div class="col-md-6">
-                <div class="card shadow h-100 slide-up" style="animation-delay: 0.7s; border-radius: 15px; border: none; overflow: hidden;">
-                    <div class="card-header" style="background: linear-gradient(45deg, rgba(var(--bs-purple-rgb), 0.2), rgba(var(--bs-info-rgb), 0.1)); border-radius: 15px 15px 0 0;">
-                        <h5 class="mb-0 d-flex align-items-center">
-                            <i class="bi bi-life-preserver me-2" style="font-size: 1.3rem; color: var(--bs-purple);"></i>
-                            <span>Need More Help?</span>
-                        </h5>
-                    </div>
-                    <div class="card-body" style="background: linear-gradient(145deg, #f8f9fa, #ffffff);">
-                        <p class="mb-3" style="font-size: 1.05rem;">If you're experiencing persistent negative emotions or need additional support:</p>
-                        <ul class="list-group list-group-flush mb-4">
-                            <li class="list-group-item bg-transparent border-0 d-flex align-items-center">
-                                <i class="bi bi-chat-heart me-3 text-primary"></i>
-                                <span>Talk to a trusted friend or family member</span>
-                            </li>
-                            <li class="list-group-item bg-transparent border-0 d-flex align-items-center">
-                                <i class="bi bi-person-check me-3 text-success"></i>
-                                <span>Consider speaking with a mental health professional</span>
-                            </li>
-                            <li class="list-group-item bg-transparent border-0 d-flex align-items-center">
-                                <i class="bi bi-globe me-3 text-info"></i>
-                                <span>Check out mental health resources online</span>
-                            </li>
-                            <li class="list-group-item bg-transparent border-0 d-flex align-items-center">
-                                <i class="bi bi-shield-plus me-3 text-danger"></i>
-                                <span>Remember that seeking help is a sign of strength</span>
-                            </li>
-                        </ul>
-                        <div class="d-grid gap-2">
-                            <a href="https://www.nimh.nih.gov/health/find-help" class="btn btn-outline-primary" target="_blank" style="border-radius: 50px; padding: 10px 20px;">
-                                <i class="bi bi-link-45deg me-2"></i>Find Mental Health Resources
-                            </a>
+        <!-- Additional fixed suggestions -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card shadow h-100 slide-up"
+                style="animation-delay: 0.5s; border-radius: 15px; border: none; overflow: hidden;">
+                <div class="card-header"
+                    style="background: linear-gradient(45deg, rgba(var(--bs-info-rgb), 0.2), rgba(var(--bs-primary-rgb), 0.1)); border-radius: 15px 15px 0 0;">
+                    <h5 class="mb-0 d-flex align-items-center">
+                        <i class="bi bi-music-note-beamed me-2" style="font-size: 1.3rem; color: var(--bs-info);"></i>
+                        <span>Mindfulness</span>
+                    </h5>
+                </div>
+                <div class="card-body d-flex flex-column"
+                    style="background: linear-gradient(145deg, #f8f9fa, #ffffff);">
+                    <p class="card-text flex-grow-1" style="font-size: 1.05rem; line-height: 1.5;">Try a guided
+                        meditation session. Even 10 minutes can help center your thoughts and reduce anxiety. Many free
+                        apps are available.</p>
+                    <div class="mt-3 pt-3 border-top">
+                        <p class="text-muted small mb-2">How helpful was this suggestion?</p>
+                        <div class="rating" data-suggestion-id="5">
+                            <i class="bi bi-star-fill rating-star" data-rating="1" style="color: #e0e0e0;"></i>
+                            <i class="bi bi-star-fill rating-star" data-rating="2" style="color: #e0e0e0;"></i>
+                            <i class="bi bi-star-fill rating-star" data-rating="3" style="color: #e0e0e0;"></i>
+                            <i class="bi bi-star-fill rating-star" data-rating="4" style="color: #e0e0e0;"></i>
+                            <i class="bi bi-star-fill rating-star" data-rating="5" style="color: #e0e0e0;"></i>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="card shadow h-100 slide-up" style="animation-delay: 0.8s; border-radius: 15px; border: none; overflow: hidden;">
-                    <div class="card-header" style="background: linear-gradient(45deg, rgba(var(--bs-success-rgb), 0.2), rgba(var(--bs-info-rgb), 0.1)); border-radius: 15px 15px 0 0;">
-                        <h5 class="mb-0 d-flex align-items-center">
-                            <i class="bi bi-lightning-charge-fill me-2" style="font-size: 1.3rem; color: var(--bs-success);"></i>
-                            <span>Quick Actions</span>
-                        </h5>
-                    </div>
-                    <div class="card-body" style="background: linear-gradient(145deg, #f8f9fa, #ffffff);">
-                        <p class="mb-4" style="font-size: 1.05rem;">Continue your wellness journey with these quick actions:</p>
-                        <div class="d-grid gap-3">
-                            <a href="{{ url_for('mood_logger') }}" class="btn btn-primary" style="border-radius: 50px; padding: 12px 20px;">
-                                <i class="bi bi-camera me-2"></i>Log New Mood
-                            </a>
-                            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary" style="border-radius: 50px; padding: 12px 20px;">
-                                <i class="bi bi-speedometer2 me-2"></i>Return to Dashboard
-                            </a>
-                            <a href="{{ url_for('analytics') }}" class="btn btn-outline-info" style="border-radius: 50px; padding: 12px 20px;">
-                                <i class="bi bi-graph-up me-2"></i>View Your Analytics
-                            </a>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card shadow h-100 slide-up"
+                style="animation-delay: 0.6s; border-radius: 15px; border: none; overflow: hidden;">
+                <div class="card-header"
+                    style="background: linear-gradient(45deg, rgba(var(--bs-warning-rgb), 0.2), rgba(var(--bs-light-rgb), 0.2)); border-radius: 15px 15px 0 0;">
+                    <h5 class="mb-0 d-flex align-items-center">
+                        <i class="bi bi-journal-text me-2" style="font-size: 1.3rem; color: var(--bs-warning);"></i>
+                        <span>Reflection</span>
+                    </h5>
+                </div>
+                <div class="card-body d-flex flex-column"
+                    style="background: linear-gradient(145deg, #f8f9fa, #ffffff);">
+                    <p class="card-text flex-grow-1" style="font-size: 1.05rem; line-height: 1.5;">Journal about three
+                        things you're grateful for today. Gratitude practice has been shown to increase happiness and
+                        life satisfaction.</p>
+                    <div class="mt-3 pt-3 border-top">
+                        <p class="text-muted small mb-2">How helpful was this suggestion?</p>
+                        <div class="rating" data-suggestion-id="6">
+                            <i class="bi bi-star-fill rating-star" data-rating="1" style="color: #e0e0e0;"></i>
+                            <i class="bi bi-star-fill rating-star" data-rating="2" style="color: #e0e0e0;"></i>
+                            <i class="bi bi-star-fill rating-star" data-rating="3" style="color: #e0e0e0;"></i>
+                            <i class="bi bi-star-fill rating-star" data-rating="4" style="color: #e0e0e0;"></i>
+                            <i class="bi bi-star-fill rating-star" data-rating="5" style="color: #e0e0e0;"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
-    {% block extra_js %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // Helper function to check if element is in viewport
         function isInViewport(element) {
             const rect = element.getBoundingClientRect();
@@ -295,16 +305,16 @@
                 rect.right <= (window.innerWidth || document.documentElement.clientWidth)
             );
         }
-        
+
         // Add animated class to elements that are already visible
-        setTimeout(function() {
-            document.querySelectorAll('.fade-in, .slide-up').forEach(function(element) {
+        setTimeout(function () {
+            document.querySelectorAll('.fade-in, .slide-up').forEach(function (element) {
                 if (isInViewport(element)) {
                     element.classList.add('animated');
                 }
             });
         }, 100);
-        
+
         // Create intersection observer for elements that come into view later
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -313,22 +323,22 @@
                     observer.unobserve(entry.target);
                 }
             });
-        }, {threshold: 0.1});
-        
+        }, { threshold: 0.1 });
+
         // Observe all animation elements
         document.querySelectorAll('.fade-in, .slide-up').forEach(element => {
             observer.observe(element);
         });
-        
+
         // Handle rating stars
         const ratingStars = document.querySelectorAll('.rating-star');
-        
+
         ratingStars.forEach(star => {
-            star.addEventListener('click', function() {
+            star.addEventListener('click', function () {
                 const rating = this.dataset.rating;
                 const suggestionId = this.parentElement.dataset.suggestionId;
                 const stars = this.parentElement.querySelectorAll('.rating-star');
-                
+
                 // Update UI
                 stars.forEach(s => {
                     if (s.dataset.rating <= rating) {
@@ -337,7 +347,7 @@
                         s.style.color = '#e0e0e0';
                     }
                 });
-                
+
                 // Send rating to server
                 fetch('{{ url_for("rate_suggestion") }}', {
                     method: 'POST',
@@ -349,42 +359,42 @@
                         rating: rating
                     })
                 })
-                .then(response => response.json())
-                .then(data => {
-                    // Show success message
-                    const thankYou = document.createElement('div');
-                    thankYou.className = 'text-success mt-2 small fade-in animated';
-                    thankYou.innerHTML = '<i class="bi bi-check-circle me-1"></i>Thank you for your feedback!';
-                    this.parentElement.appendChild(thankYou);
-                    
-                    // Disable further rating
-                    stars.forEach(s => s.style.pointerEvents = 'none');
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    // Show error message
-                    const errorMsg = document.createElement('div');
-                    errorMsg.className = 'text-danger mt-2 small';
-                    errorMsg.innerHTML = '<i class="bi bi-exclamation-circle me-1"></i>Error saving rating. Please try again.';
-                    this.parentElement.appendChild(errorMsg);
-                });
+                    .then(response => response.json())
+                    .then(data => {
+                        // Show success message
+                        const thankYou = document.createElement('div');
+                        thankYou.className = 'text-success mt-2 small fade-in animated';
+                        thankYou.innerHTML = '<i class="bi bi-check-circle me-1"></i>Thank you for your feedback!';
+                        this.parentElement.appendChild(thankYou);
+
+                        // Disable further rating
+                        stars.forEach(s => s.style.pointerEvents = 'none');
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // Show error message
+                        const errorMsg = document.createElement('div');
+                        errorMsg.className = 'text-danger mt-2 small';
+                        errorMsg.innerHTML = '<i class="bi bi-exclamation-circle me-1"></i>Error saving rating. Please try again.';
+                        this.parentElement.appendChild(errorMsg);
+                    });
             });
-            
+
             // Hover effects
-            star.addEventListener('mouseover', function() {
+            star.addEventListener('mouseover', function () {
                 const rating = this.dataset.rating;
                 const stars = this.parentElement.querySelectorAll('.rating-star');
-                
+
                 stars.forEach(s => {
                     if (s.dataset.rating <= rating) {
                         s.style.color = '#ffc107';
                     }
                 });
             });
-            
-            star.addEventListener('mouseout', function() {
+
+            star.addEventListener('mouseout', function () {
                 const stars = this.parentElement.querySelectorAll('.rating-star');
-                
+
                 stars.forEach(s => {
                     if (!s.classList.contains('text-warning')) {
                         s.style.color = '#e0e0e0';
@@ -392,27 +402,104 @@
                 });
             });
         });
-    });
-</script>
-{% endblock %}
-                    <!-- const stars = this.parentElement.querySelectorAll('.rating-star');
-                    
-                    stars.forEach(s => {
-                        if (s.dataset.rating <= rating) {
-                            s.classList.add('text-warning');
+
+        // Handle "I tried this" button
+        document.querySelectorAll('.use-suggestion-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const suggestionId = this.getAttribute('data-suggestion-id');
+                fetch('{{ url_for("use_suggestion") }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ suggestion_id: suggestionId })
+                })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data && data.success) {
+                            this.classList.remove('btn-outline-primary');
+                            this.classList.add('btn-success');
+                            this.innerHTML = '<i class="bi bi-check2"></i> Used';
+                            this.disabled = true;
                         }
+                    })
+                    .catch(() => {
+                        // Silently ignore for now or show toast
                     });
-                });
-                
-                star.addEventListener('mouseout', function() {
-                    const stars = this.parentElement.querySelectorAll('.rating-star');
-                    stars.forEach(s => {
-                        if (!s.classList.contains('bi-star-fill')) {
-                            s.classList.remove('text-warning');
-                        }
-                    });
-                });
             });
         });
-    </script>
-    {% endblock %} -->
+    });
+</script>
+<script>
+    (function () {
+        const form = document.getElementById('aiChatForm');
+        const input = document.getElementById('aiInput');
+        const list = document.getElementById('aiMessages');
+        const errorBox = document.getElementById('aiError');
+        const emotion = '{{ emotion }}';
+        let initialSuggestions = [];
+        try {
+            const raw = (document.getElementById('aiChatBody') || {}).getAttribute('data-suggestions') || '[]';
+            initialSuggestions = JSON.parse(raw);
+        } catch (e) {
+            initialSuggestions = [];
+        }
+
+        function addBubble(text, who) {
+            const wrap = document.createElement('div');
+            wrap.className = who === 'me' ? 'align-self-end' : 'align-self-start';
+            const bubble = document.createElement('div');
+            bubble.className = 'p-2 rounded ' + (who === 'me' ? 'bg-primary text-white' : 'bg-light');
+            bubble.style.maxWidth = '85%';
+            bubble.innerText = text;
+            wrap.appendChild(bubble);
+            list.appendChild(wrap);
+            if (list && list.parentElement) {
+                list.parentElement.scrollTop = list.parentElement.scrollHeight;
+            }
+        }
+
+        // Show initial mood-based suggestions in chat (optional to reply)
+        (function showInitialSuggestions() {
+            try {
+                const moodTitle = (emotion || '').toString().trim();
+                const top = (Array.isArray(initialSuggestions) ? initialSuggestions : []).slice(0, 3);
+                if (top.length > 0) {
+                    const tips = top
+                        .map((s, i) => `${i + 1}. ${(s && (s.content || s.suggestion || s.text)) || ''}`)
+                        .filter(Boolean)
+                        .join('\n');
+                    const greeting = moodTitle
+                        ? `Based on your mood (${moodTitle}), here are a few helpful tips:\n\n${tips}\n\nYou can try these or ask a question if you like.`
+                        : `Here are a few helpful tips:\n\n${tips}\n\nFeel free to ask a question if you like.`;
+                    addBubble(greeting, 'bot');
+                } else if (moodTitle) {
+                    addBubble(`You seem to be feeling ${moodTitle}. Would you like any suggestions or guidance?`, 'bot');
+                }
+            } catch (_) { /* ignore */ }
+        })();
+
+        if (form) {
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                errorBox.style.display = 'none';
+                const msg = (input.value || '').trim();
+                if (!msg) return;
+                addBubble(msg, 'me');
+                input.value = '';
+                try {
+                    const res = await fetch('/api/ai-chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: msg, emotion })
+                    });
+                    const data = await res.json();
+                    if (!data.success) throw new Error(data.error || 'Failed');
+                    addBubble(data.reply, 'bot');
+                } catch (err) {
+                    errorBox.innerText = 'AI error: ' + (err.message || err);
+                    errorBox.style.display = '';
+                }
+            });
+        }
+    })();
+</script>
+{% endblock %}
