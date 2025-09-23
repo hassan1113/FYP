@@ -586,10 +586,10 @@
                             <option value="month">Monthly Report</option>
                             <option value="year">Yearly Report</option>
                         </select>
-                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
+                        <!-- <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
                             data-bs-target="#advancedFilterModal">
                             <i class="bi bi-sliders me-1"></i>Advanced Filters
-                        </button>
+                        </button> -->
                         <button id="downloadReport" class="btn btn-sm btn-primary">
                             <i class="bi bi-download me-1"></i>Download Report
                         </button>
@@ -1178,189 +1178,138 @@
     });
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <script>
-    // Download enhanced report using current mood_stats
     document.addEventListener('DOMContentLoaded', function () {
         const btn = document.getElementById('downloadReport');
         if (!btn) return;
-
+    
         btn.addEventListener('click', function () {
-            try {
-                const timeframe = document.getElementById('reportTimeframe').value;
-                const jsPDFLib = window.jspdf;
-                if (!jsPDFLib || !jsPDFLib.jsPDF) {
-                    alert('PDF library not loaded.');
-                    return;
-                }
-
-                const doc = new jsPDFLib.jsPDF();
-                const username = '{{ session.get("first_name") or session.get("username", "User") }}';
-                const currentDate = new Date().toLocaleDateString();
-
-                // Header
-                doc.setFontSize(22);
-                doc.setTextColor(111, 66, 193);
-                doc.text('MoodSync Report', 105, 20, { align: 'center' });
-                doc.setFontSize(12);
-                doc.setTextColor(0, 0, 0);
-                doc.text(`Generated for: ${username}`, 20, 40);
-                doc.text(`Date: ${currentDate}`, 20, 48);
-                doc.text(`Report Type: ${timeframe}`, 20, 56);
-
-                {% if mood_stats %}
-                // Summary
-                doc.setFontSize(16);
-                doc.setTextColor(111, 66, 193);
-                doc.text('Summary', 20, 72);
-                doc.setFontSize(12);
-                doc.setTextColor(0, 0, 0);
-                doc.text(`Total entries (30d): {{ mood_stats.total_entries or 0 }}`, 20, 82);
-                doc.text(`Active days: {{ mood_stats.daily_averages|length if mood_stats.daily_averages else 0 }}`, 20, 90);
-                doc.text(`Streak (days): {{ mood_stats.streak or 0 }}`, 20, 98);
-                doc.text(`Average intensity: {{ '%.1f'|format(mood_stats.average_intensity) if mood_stats.average_intensity else '0.0' }}`, 20, 106);
-                doc.text(`Dominant emotion: {{ mood_stats.dominant_emotion or 'None' }}`, 20, 114);
-
-                // Emotion distribution with percentages
-                doc.setFontSize(16);
-                doc.setTextColor(111, 66, 193);
-                doc.text('Emotion Distribution', 20, 130);
-                doc.setFontSize(12);
-                doc.setTextColor(0, 0, 0);
-
-                {% if mood_stats.emotion_counts %}
-                (function () {
-                    const items = [
-                        {% for item in mood_stats.emotion_counts %}
-                    { label: '{{ item.detected_emotion }}', count: { { item.count } } },
+            const timeframe = document.getElementById('reportTimeframe').value;
+            const jsPDFLib = window.jspdf;
+    
+            if (!jsPDFLib || !jsPDFLib.jsPDF) {
+                alert('PDF library not loaded.');
+                return;
+            }
+    
+            const doc = new jsPDFLib.jsPDF();
+            let currentY = 20;
+    
+            // --- Title ---
+            doc.setFontSize(22);
+            doc.setTextColor(44, 62, 80);
+            doc.text('MoodSync - Mood Analysis Report', 20, currentY);
+            currentY += 10;
+    
+            doc.setFontSize(14);
+            doc.setTextColor(100);
+            doc.text(`Timeframe: ${timeframe}`, 20, currentY);
+            currentY += 15;
+    
+            // --- Summary ---
+            doc.setFontSize(16);
+            doc.setTextColor(111, 66, 193);
+            doc.text('Summary', 20, currentY);
+            currentY += 10;
+    
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Total entries (30 days): {{ mood_stats.total_entries or 0 }}`, 20, currentY);
+            currentY += 8;
+            doc.text(`Active days: {{ mood_stats.daily_averages|length if mood_stats.daily_averages else 0 }}`, 20, currentY);
+            currentY += 8;
+            doc.text(`Streak: {{ mood_stats.streak or 0 }} days`, 20, currentY);
+            currentY += 8;
+            doc.text(`Average intensity: {{ '%.1f'|format(mood_stats.average_intensity) if mood_stats.average_intensity else '0.0' }}`, 20, currentY);
+            currentY += 8;
+            doc.text(`Dominant emotion: {{ mood_stats.dominant_emotion or 'None' }}`, 20, currentY);
+            currentY += 15;
+    
+            // --- Emotion Distribution ---
+            doc.setFontSize(16);
+            doc.setTextColor(111, 66, 193);
+            doc.text('Emotion Distribution', 20, currentY);
+            currentY += 10;
+    
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+    
+            {% if mood_stats.emotion_counts %}
+            const emotionData = [
+                {% for item in mood_stats.emotion_counts %}
+                { emotion: '{{ item.detected_emotion }}', count: {{ item.count }} },
                 {% endfor %}
-                ];
-                const total = items.reduce((a, b) => a + b.count, 0) || 1;
-                let y = 138;
-                items.forEach(it => {
-                    const pct = ((it.count / total) * 100).toFixed(1);
-                    doc.text(`- ${it.label}: ${it.count} (${pct}%)`, 24, y);
-                    y += 8;
-                });
-            })();
-        {% else %}
-        doc.text('No data', 24, 138);
-        {% endif %}
-
-        // Best/Worst day by avg intensity
-        doc.setFontSize(16);
-        doc.setTextColor(111, 66, 193);
-        doc.text('Best and Worst Days (by Avg Intensity)', 20, 170);
-        doc.setFontSize(12);
-        doc.setTextColor(0, 0, 0);
-
-        {% if mood_stats.daily_averages %}
-        (function () {
-            const entries = Object.entries({{ mood_stats.daily_averages | tojson }});
-        if (entries.length) {
-            entries.sort((a, b) => b[1] - a[1]);
-            const best = entries[0];
-            const worst = entries[entries.length - 1];
-            doc.text(`Best: ${best[0]} (avg ${Number(best[1]).toFixed(1)})`, 24, 178);
-            doc.text(`Worst: ${worst[0]} (avg ${Number(worst[1]).toFixed(1)})`, 24, 186);
-        } else {
-            doc.text('No daily data', 24, 178);
-        }
-    })();
-    {% else %}
-    doc.text('No daily data', 24, 178);
-    {% endif %}
-
-    // Recommendations by dominant emotion
-    doc.setFontSize(16);
-    doc.setTextColor(111, 66, 193);
-    doc.text('Recommendations', 20, 202);
-    doc.setFontSize(12);
-    doc.setTextColor(0, 0, 0);
-
-    (function () {
-        const emo = "{{ mood_stats.dominant_emotion or '' }}";
-        const recsMap = {
-            'Happy': [
-                'Share positive moments with a friend or journal them.',
-                'Schedule enjoyable activities to sustain positivity.'
-            ],
-            'Sad': [
-                'Go for a short walk and get some sunlight.',
-                'Reach out to someone you trust and talk it out.'
-            ],
-            'Angry': [
-                'Try 5 minutes of deep breathing or box breathing.',
-                'Channel energy into a quick workout or writing.'
-            ],
-            'Fear': [
-                'List worries and mark actionable next steps.',
-                'Practice grounding (5-4-3-2-1 method).'
-            ],
-            'Disgust': [
-                'Notice triggers and step away briefly to reset.',
-                'Engage in a neutral activity (music, tidy up) to shift state.'
-            ],
-            'Surprise': [
-                'Note what surprised you and what you learned.',
-                'Plan a small routine to regain control if needed.'
-            ],
-            'Neutral': [
-                'Add a small enjoyable task to lift mood.',
-                'Light exercise or stretching for 10 minutes.'
-            ]
-        };
-        const list = recsMap[emo] || ['Log more moods to unlock personalized tips.'];
-        let y = 210;
-        list.forEach(t => {
-            doc.text(`- ${t}`, 24, y);
-            y += 8;
-        });
-    })();
-
-    // Appendix: recent entries
-    doc.setFontSize(16);
-    doc.setTextColor(111, 66, 193);
-    doc.text('Recent Entries', 20, 240);
-    doc.setFontSize(12);
-    doc.setTextColor(0, 0, 0);
-
-    {% if mood_history %}
-    (function () {
-        const rows = [
-            {% for entry in mood_history[: 5] %}
-            {
-        date: '{{ entry.timestamp }}',
-            emo: '{{ entry.detected_emotion }}',
-                intensity: { { entry.intensity if entry.intensity is not none else 0 } },
-        notes: { { (entry.notes or '') | tojson } }
-    },
-    {% endfor %}
-        ];
-    let y = 248;
-    rows.forEach(r => {
-        const line = `${r.date} - ${r.emo} (intensity ${r.intensity || 'N/A'})`;
-        doc.text(line, 24, y);
-        y += 6;
-    });
-            }) ();
-    {% else %}
-    doc.text('No recent entries found.', 24, 248);
-    {% endif %}
-
-    {% else %}
-    doc.text('No mood stats available yet.', 20, 72);
-    {% endif %}
-
-    // Footer
-    doc.setFontSize(10);
-    doc.setTextColor(100, 100, 100);
-    doc.text('Generated by MoodSync', 105, 280, { align: 'center' });
-    doc.save(`MoodSync_Report_${currentDate.replace(/\//g, '-')}.pdf`);
-            } catch (err) {
-        console.error('Report generation failed:', err);
-        alert('Failed to generate report. Please check console.');
-    }
+            ];
+    
+            const totalCount = emotionData.reduce((sum, item) => sum + item.count, 0) || 1;
+    
+            emotionData.forEach(item => {
+                const percentage = ((item.count / totalCount) * 100).toFixed(1);
+                doc.text(`• ${item.emotion}: ${item.count} occurrences (${percentage}%)`, 24, currentY);
+                currentY += 8;
+            });
+            {% else %}
+            doc.text('No emotion data available', 24, currentY);
+            currentY += 10;
+            {% endif %}
+    
+            currentY += 10;
+    
+            // --- Daily Analysis ---
+            doc.setFontSize(16);
+            doc.setTextColor(111, 66, 193);
+            doc.text('Daily Analysis', 20, currentY);
+            currentY += 10;
+    
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Best day: {{ mood_stats.best_day.date if mood_stats.best_day else 'N/A' }} (average intensity: {{ '%.1f'|format(mood_stats.best_day.average_intensity) if mood_stats.best_day else '0.0' }})`, 20, currentY);
+            currentY += 8;
+            doc.text(`Most challenging day: {{ mood_stats.challenging_day.date if mood_stats.challenging_day else 'N/A' }} (average intensity: {{ '%.1f'|format(mood_stats.challenging_day.average_intensity) if mood_stats.challenging_day else '0.0' }})`, 20, currentY);
+            currentY += 15;
+    
+            // --- Recommendations ---
+            doc.setFontSize(16);
+            doc.setTextColor(111, 66, 193);
+            doc.text('Personalized Recommendations', 20, currentY);
+            currentY += 10;
+    
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            const recs = [
+                "1. Continue logging your moods to identify patterns.",
+                "2. Practice self-care and maintain healthy habits.",
+                "3. Seek support when needed and celebrate small victories."
+            ];
+            recs.forEach(r => {
+                doc.text(r, 24, currentY);
+                currentY += 8;
+            });
+            currentY += 15;
+    
+            // --- Recent Entries ---
+            // doc.setFontSize(16);
+            // doc.setTextColor(111, 66, 193);
+            // doc.text('Recent Mood Entries', 20, currentY);
+            // currentY += 10;
+    
+            // doc.setFontSize(12);
+            // doc.setTextColor(0, 0, 0);
+            // {% if recent_entries %}
+            // {% for entry in recent_entries %}
+            // doc.text('{{ entry.timestamp }} - {{ entry.detected_emotion }} (Confidence: {{ "%.1f"|format(entry.confidence) }})', 20, currentY);
+            // currentY += 8;
+            // {% endfor %}
+            // {% else %}
+            // doc.text('No recent entries available.', 20, currentY);
+            // {% endif %}
+    
+            // --- Save PDF ---
+            doc.save(`mood_report_${timeframe}.pdf`);
         });
     });
-</script>
+    </script>
+    
+
 {% endblock %}
