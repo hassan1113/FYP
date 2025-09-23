@@ -455,6 +455,19 @@
         .color-option:hover {
             transform: scale(1.2);
         }
+
+        /* Fixed flash/toast container */
+        .flash-container {
+            position: fixed;
+            top: calc(var(--navbar-height) + 10px);
+            right: 20px;
+            z-index: 2000;
+            width: min(360px, 90vw);
+        }
+
+        .flash-container .alert {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 
@@ -551,10 +564,10 @@
         </div>
     </nav>
 
-    <!-- Flash Messages -->
+    <!-- Flash Messages (fixed toasts) -->
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-    <div class="container mt-4">
+    <div id="flashContainer" class="flash-container" aria-live="polite" aria-atomic="true">
         {% for category, message in messages %}
         <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show"
             role="alert">
@@ -684,6 +697,19 @@
 
             // Run on scroll
             window.addEventListener('scroll', checkScroll);
+
+            // Auto-dismiss flash alerts after ~3.5s
+            const flashContainer = document.getElementById('flashContainer');
+            if (flashContainer && window.bootstrap && bootstrap.Alert) {
+                const alerts = flashContainer.querySelectorAll('.alert');
+                alerts.forEach(function (el, idx) {
+                    const instance = bootstrap.Alert.getOrCreateInstance(el);
+                    const delay = 3500 + (idx * 200);
+                    setTimeout(function () {
+                        try { instance.close(); } catch (e) { /* no-op */ }
+                    }, delay);
+                });
+            }
         });
     </script>
     {% block extra_js %}{% endblock %}

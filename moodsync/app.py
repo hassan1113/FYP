@@ -232,34 +232,17 @@ def settings():
         flash('Settings updated successfully!', 'success')
         
         if form_type == 'profile':
-            # Handle profile form
-            name = request.form.get('name')
-            email = request.form.get('email')
-            age = request.form.get('age')
-            gender = request.form.get('gender')
-            bio = request.form.get('bio', '')
-            
+            # Handle profile form (first/last name, email, bio)
+            first_name = request.form.get('first_name', '').strip()
+            last_name = request.form.get('last_name', '').strip()
+            email = request.form.get('email', '').strip()
+            bio = request.form.get('bio', '').strip()
+
             # Validate inputs
-            if not name or not email:
-                flash('Name and email are required', 'danger')
+            if not email:
+                flash('Email is required', 'danger')
                 return redirect(url_for('settings'))
-                
-            # Validate age
-            if age:
-                try:
-                    age = int(age)
-                    if age < 1 or age > 120:
-                        flash('Age must be between 1 and 120', 'danger')
-                        return redirect(url_for('settings'))
-                except ValueError:
-                    flash('Invalid age value', 'danger')
-                    return redirect(url_for('settings'))
-            
-            # Validate gender
-            if gender and gender not in ['male', 'female', 'other', 'prefer_not_to_say']:
-                flash('Invalid gender value', 'danger')
-                return redirect(url_for('settings'))
-            
+
             # Update user profile
             conn = get_db_connection()
             
@@ -272,8 +255,8 @@ def settings():
                     conn.execute('ALTER TABLE users ADD COLUMN bio TEXT')
                 
                 # Update user profile
-                conn.execute('UPDATE users SET name = ?, email = ?, bio = ? WHERE id = ?', 
-                            (name, email, bio, user_id))
+                conn.execute('UPDATE users SET first_name = ?, last_name = ?, email = ?, bio = ? WHERE id = ?', 
+                            (first_name, last_name, email, bio, user_id))
                 conn.commit()
                 flash('Profile updated successfully', 'success')
             except sqlite3.Error as e:
